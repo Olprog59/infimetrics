@@ -230,7 +230,7 @@ Temporary Items
 *.vsix
 
 ### VisualStudioCode Patch ###
-# Ignore all int history of files
+# Ignore all local history of files
 .history
 .ionide
 
@@ -263,3 +263,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/go,goland+all,intellij+all,visualstudiocode,macos,windows,linux
 tmp
 .env
+.idea
