@@ -1,29 +1,38 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/Olprog59/golog"
+	"github.com/Olprog59/infimetrics/appconfig"
+	"github.com/Olprog59/infimetrics/database"
+	router "github.com/Olprog59/infimetrics/router"
 	_ "github.com/lib/pq"
-	"github.com/olprog59/infimetrics/commons"
-	"github.com/olprog59/infimetrics/database"
-	router "github.com/olprog59/infimetrics/router"
-	"log"
 	"net/http"
 )
 
 func init() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmicroseconds)
+	golog.SetLanguage("fr")
+	golog.EnableFileNameLogging()
 }
 
 func main() {
-	db := database.NewDB()
+	cfg, err := appconfig.LoadFromPath(context.Background(), "pkl/int/appConfig.pkl")
+	if err != nil {
+		golog.Err(err.Error())
+		panic(err)
+	}
+	golog.Info("I'm running on host %s", cfg.Host)
+
+	db := database.NewDB(cfg.Database)
 	dbConnect, err := db.Connect()
 	if err != nil {
-		log.Fatal(err)
+		golog.Debug(err.Error())
 	}
 
 	defer func() {
 		if err := db.Close(); err != nil {
-			log.Fatal(err)
+			golog.Err(err.Error())
 		}
 	}()
 
@@ -31,9 +40,9 @@ func main() {
 	r.Use(router.LoggingMiddleware) // Ajoute le middleware de journalisation
 	r.RegisterRoutes()
 
-	log.Println("Server is running on " + fmt.Sprintf("%s:%s", commons.URL, commons.Port))
-	err = http.ListenAndServe(fmt.Sprintf("%s:%s", commons.URL, commons.Port), nil)
+	golog.Info("Server is running on %s %d", cfg.Host, cfg.Port)
+	err = http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), nil)
 	if err != nil {
-		log.Fatal(err)
+		golog.Err(err.Error())
 	}
 }

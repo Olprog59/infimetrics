@@ -230,7 +230,7 @@ Temporary Items
 *.vsix
 
 ### VisualStudioCode Patch ###
-# Ignore all local history of files
+# Ignore all int history of files
 .history
 .ionide
 

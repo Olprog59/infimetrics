@@ -2,8 +2,8 @@ package database
 
 import (
 	"database/sql"
-	"github.com/olprog59/infimetrics/commons"
-	"log"
+	"github.com/Olprog59/golog"
+	"github.com/Olprog59/infimetrics/appconfig"
 )
 
 type IDB interface {
@@ -12,32 +12,38 @@ type IDB interface {
 }
 
 type Db struct {
-	DB sql.DB
+	DB       sql.DB
+	Database *appconfig.Database
 }
 
-func NewDB() IDB {
-	return &Db{}
+func NewDB(database *appconfig.Database) IDB {
+	return &Db{
+		Database: database,
+	}
 }
 
 func (d *Db) Connect() (*sql.DB, error) {
+	dbConnStr := "postgresql://" + d.Database.User + ":" + d.Database.Password + "@" + d.Database.Host + "/" + d.Database.Name + "?sslmode=" + d.Database.SslMode
 	// Connect to database
-	db, err := sql.Open(commons.DBDriver, commons.DBConnStr)
+	db, err := sql.Open(d.Database.Driver, dbConnStr)
 	if err != nil {
-		log.Fatal(err)
+		golog.Err(err.Error())
+		return nil, err
 	}
 
 	// Check connection
 	err = db.Ping()
 	if err != nil {
-		log.Fatal(err)
+		golog.Err(err.Error())
+		return nil, err
 	}
-	log.Println("Successfully connected!")
+	golog.Info("Successfully connected!")
 
 	_, err = db.Exec(sqlInitStr)
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Successfully created table!")
+	golog.Info("Successfully created table!")
 	return db, nil
 }
 
@@ -46,7 +52,7 @@ func (d *Db) Close() error {
 	if err != nil {
 		return err
 	}
-	log.Println("Database is closed")
+	golog.Err("Database is closed")
 	return nil
 }
 

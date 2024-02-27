@@ -2,7 +2,7 @@ package router
 
 import (
 	"database/sql"
-	"github.com/olprog59/infimetrics/router/handlers"
+	"github.com/Olprog59/infimetrics/router/handlers"
 	"net/http"
 )
 

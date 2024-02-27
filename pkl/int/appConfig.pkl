@@ -1,0 +1,21 @@
+amends "../AppConfig.pkl"
+
+host = read?("env:HOST") ?? "localhost"
+
+port = read?("env:PORT")?.toInt() ?? 8080
+
+database {
+  user = read?("env:DB_USER") ?? "infimetrics"
+
+  password = read?("env:DB_PASSWORD") ?? "infimetrics"
+
+  host = read?("env:DB_HOST") ?? "localhost"
+
+  ssl_mode = read?("env:SSL_MODE") ?? "disable"
+
+  name = read?("env:DB_NAME") ?? "infimetrics"
+
+  port = read?("env:DB_PORT")?.toInt() ?? 5432
+
+  driver = read?("env:DB_DRIVER") ?? "postgres"
+}
