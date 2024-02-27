@@ -263,3 +263,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/go,goland+all,intellij+all,visualstudiocode,macos,windows,linux
 tmp
 .env
+.idea
