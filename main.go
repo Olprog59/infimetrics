@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/appconfig"
@@ -17,18 +18,15 @@ func init() {
 }
 
 func main() {
-	cfg, err := appconfig.LoadFromPath(context.Background(), "pkl/int/appConfig.pkl")
+	cfg, err := loadConfig()
 	if err != nil {
 		golog.Err(err.Error())
 		panic(err)
 	}
 	golog.Info("I'm running on host %s", cfg.Host)
 
-	db := database.NewDB(cfg.Database)
-	dbConnect, err := db.Connect()
-	if err != nil {
-		golog.Debug(err.Error())
-	}
+	db, dbConnect := loadDatabase(cfg, err)
+	redis := loadRedis(cfg)
 
 	defer func() {
 		if err := db.Close(); err != nil {
@@ -36,7 +34,7 @@ func main() {
 		}
 	}()
 
-	r := router.NewRouter(dbConnect)
+	r := router.NewRouter(dbConnect, redis)
 	r.Use(router.LoggingMiddleware) // Ajoute le middleware de journalisation
 	r.RegisterRoutes()
 
@@ -45,4 +43,26 @@ func main() {
 	if err != nil {
 		golog.Err(err.Error())
 	}
+}
+
+func loadDatabase(cfg *appconfig.AppConfig, err error) (database.IDB, *sql.DB) {
+	db := database.NewDB(cfg.Database)
+	dbConnect, err := db.Connect()
+	if err != nil {
+		golog.Debug(err.Error())
+	}
+	return db, dbConnect
+}
+
+func loadRedis(cfg *appconfig.AppConfig) *database.RedisDB {
+	redis := database.NewRedis(cfg.Redis)
+	err := redis.Ping()
+	if err != nil {
+		golog.Debug(err.Error())
+	}
+	return redis
+}
+
+func loadConfig() (*appconfig.AppConfig, error) {
+	return appconfig.LoadFromPath(context.Background(), "pkl/int/appConfig.pkl")
 }

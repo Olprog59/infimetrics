@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #f0f;
+  --color-secondary: #0ff;
+  --color-tertiary: #ff0;
+  --font-primary: "Arial", sans-serif;
+  --font-secondary: "Times New Roman", serif;
+  --font-tertiary: "Courier New", monospace;
+  --spacing-small: 0.5rem;
+  --spacing-medium: 1rem;
+  --spacing-large: 2rem;
+  --border-radius-small: 0.25rem;
+  --border-radius-medium: 0.5rem;
+  --border-radius-large: 1rem;
+  --shadow-small: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 0 1rem rgba(0, 0, 0, 0.2);
+  --shadow-large: 0 0 2rem rgba(0, 0, 0, 0.3);
+  --z-index-small: 10;
+  --z-index-medium: 100;
+  --z-index-large: 1000;
+}
+
+/*# sourceMappingURL=index.css.map */

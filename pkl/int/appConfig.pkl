@@ -19,3 +19,11 @@ database {
 
   driver = read?("env:DB_DRIVER") ?? "postgres"
 }
+
+redis {
+  host = read?("env:REDIS_HOST") ?? "localhost"
+
+  port = read?("env:REDIS_PORT")?.toInt() ?? 6379
+
+  password = read?("env:REDIS_PASSWORD") ?? ""
+}

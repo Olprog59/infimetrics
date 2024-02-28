@@ -6,4 +6,5 @@ import "github.com/apple/pkl-go/pkl"
 func init() {
 	pkl.RegisterMapping("Olprog59.AppConfig", AppConfig{})
 	pkl.RegisterMapping("Olprog59.AppConfig#Database", Database{})
+	pkl.RegisterMapping("Olprog59.AppConfig#Redis", Redis{})
 }

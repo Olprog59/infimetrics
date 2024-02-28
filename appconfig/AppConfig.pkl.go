@@ -13,6 +13,8 @@ type AppConfig struct {
 	Port uint16 `pkl:"port"`
 
 	Database *Database `pkl:"database"`
+
+	Redis *Redis `pkl:"redis"`
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a AppConfig

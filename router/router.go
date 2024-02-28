@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"github.com/Olprog59/infimetrics/database"
 	"github.com/Olprog59/infimetrics/router/handlers"
 	"net/http"
 )
@@ -15,6 +16,7 @@ type Router interface {
 // httpRouter implémente l'interface Router.
 type httpRouter struct {
 	DB          *sql.DB
+	Redis       *database.RedisDB
 	middlewares []func(http.Handler) http.Handler
 }
 
@@ -24,17 +26,22 @@ func (r *httpRouter) Use(middleware func(http.Handler) http.Handler) {
 }
 
 // NewRouter crée une nouvelle instance de Router.
-func NewRouter(db *sql.DB) Router {
+func NewRouter(db *sql.DB, redis *database.RedisDB) Router {
 	return &httpRouter{
-		DB: db,
+		DB:    db,
+		Redis: redis,
 	}
 }
 
 func (r *httpRouter) RegisterRoutes() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handlers.HomeHandler())
+	// static files
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/assets"))))
+	mux.HandleFunc("GET /{$}", handlers.HomeHandler())
 
 	mux.HandleFunc("/with-db", dbMiddleware(r.DB)(handlers.WithDBHandler()))
+
+	mux.HandleFunc("/with-redis", dbMiddleware(r.DB)(handlers.WithRedisHandler(r.Redis)))
 
 	// Appliquer les middlewares dans l'ordre inverse de leur ajout
 	// pour que le premier middleware ajouté soit exécuté en premier.

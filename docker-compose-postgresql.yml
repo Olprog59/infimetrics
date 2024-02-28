@@ -6,23 +6,35 @@ services:
     container_name: postgresql
     image: postgres:latest
     restart: unless-stopped
+    networks:
+      - infimetrics
     volumes:
       - pgdata:/var/lib/postgresql/data
 
     ports:
       - "5432:5432"
 
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /var/lib/postgresql/data
 
-  adminer:
-    container_name: adminer
-    image: adminer
+  redis:
+    container_name: redis
+    image: redis:latest
     restart: unless-stopped
-
+    networks:
+      - infimetrics
     ports:
-      - "9090:8080"
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
 
 volumes:
     pgdata:
-        driver: int
+      driver: local
+    cache:
+      driver: local
+
+networks:
+  infimetrics:

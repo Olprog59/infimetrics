@@ -30,3 +30,19 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		golog.Info("Completed in %v", time.Since(start))
 	})
 }
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Check if user is authenticated
+		if !isAuthenticated(r) {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func isAuthenticated(r *http.Request) bool {
+	// Simule un utilisateur connecté
+	return true // Change cela en fonction de la logique d'authentification réelle
+}

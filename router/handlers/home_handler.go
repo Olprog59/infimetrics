@@ -1,9 +1,17 @@
 package handlers
 
-import "net/http"
+import (
+	"html/template"
+	"net/http"
+)
 
 func HomeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, world!"))
+		// template
+		tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
+		err := tmpl.Execute(w, nil)
+		if err != nil {
+			return
+		}
 	}
 }
