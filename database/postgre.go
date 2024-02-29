@@ -12,7 +12,7 @@ type IDB interface {
 }
 
 type Db struct {
-	DB       sql.DB
+	DB       *sql.DB
 	Database *appconfig.Database
 }
 
@@ -37,13 +37,13 @@ func (d *Db) Connect() (*sql.DB, error) {
 		golog.Err(err.Error())
 		return nil, err
 	}
-	golog.Info("Successfully connected!")
+	golog.Success("Successfully connected!")
 
 	_, err = db.Exec(sqlInitStr)
 	if err != nil {
 		return nil, err
 	}
-	golog.Info("Successfully created table!")
+	golog.Success("Successfully created table!")
 	return db, nil
 }
 

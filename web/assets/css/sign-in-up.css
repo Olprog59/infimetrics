@@ -1,0 +1,96 @@
+#sign-in-up-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+#sign-in-up-container .sign-in-up-title {
+  color: var(--color-primary);
+  text-align: center;
+}
+#sign-in-up-container #sign-in-up-form .form-group {
+  margin-bottom: 20px;
+}
+#sign-in-up-container #sign-in-up-form .form-group .form-label {
+  display: block;
+  margin-bottom: 5px;
+}
+#sign-in-up-container #sign-in-up-form .form-group .form-input {
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  padding: 10px;
+  width: 100%;
+}
+#sign-in-up-container #sign-in-up-form .form-group .info, #sign-in-up-container #sign-in-up-form .form-group [id^=error-] {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+#sign-in-up-container #sign-in-up-form .form-group .info {
+  color: var(--color-green);
+}
+#sign-in-up-container #sign-in-up-form .form-group [id^=error-] {
+  color: var(--color-secondary);
+}
+#sign-in-up-container #sign-in-up-form .form-submit {
+  background-color: var(--color-primary);
+  border: none;
+  color: var(--color-white);
+  cursor: pointer;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  width: 100%;
+}
+#sign-in-up-container #sign-in-up-form .form-submit:disabled {
+  opacity: 0.6;
+}
+#sign-in-up-container #sign-in-up-form #errors {
+  position: fixed;
+  top: 0;
+  left: var(--width-header);
+  right: 0;
+  padding: 1rem;
+  font-size: 1.3rem;
+  text-align: center;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  animation: fade-in 1s ease-in-out, fade-out 1s 9s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+#sign-in-up-container #sign-in-up-form #errors:not(:empty) {
+  opacity: 1;
+  visibility: visible;
+}
+#sign-in-up-container .signup-link, #sign-in-up-container .signin-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+#sign-in-up-container .signup-link a, #sign-in-up-container .signin-link a {
+  color: var(--color-secondary);
+  text-decoration: none;
+}
+#sign-in-up-container .signup-link a:hover, #sign-in-up-container .signin-link a:hover {
+  text-decoration: underline;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-100%);
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-100%);
+  }
+}
+
+/*# sourceMappingURL=sign-in-up.css.map */

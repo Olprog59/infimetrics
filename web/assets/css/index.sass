@@ -1,30 +1,21 @@
-*
-  margin: 0
-  padding: 0
-  box-sizing: border-box
+body
+	background-color: var(--color-white)
+	color: var(--color-primary)
+	font-family: 'Luciole', sans-serif
 
-\:root
-  --color-primary: #f0f
-  --color-secondary: #0ff
-  --color-tertiary: #ff0
 
-  --font-primary: 'Arial', sans-serif
-  --font-secondary: 'Times New Roman', serif
-  --font-tertiary: 'Courier New', monospace
+header
+	background-color: var(--color-primary)
+	color: var(--color-white)
 
-  --spacing-small: 0.5rem
-  --spacing-medium: 1rem
-  --spacing-large: 2rem
+.container
+	& > header
+		position: fixed
+		left: 0
+		top: 0
+		bottom: 0
+		width: var(--width-header)
 
-  --border-radius-small: 0.25rem
-  --border-radius-medium: 0.5rem
-  --border-radius-large: 1rem
-
-  --shadow-small: 0 0 0.5rem rgba(0, 0, 0, 0.1)
-  --shadow-medium: 0 0 1rem rgba(0, 0, 0, 0.2)
-  --shadow-large: 0 0 2rem rgba(0, 0, 0, 0.3)
-
-  --z-index-small: 10
-  --z-index-medium: 100
-  --z-index-large: 1000
+	& > main
+		padding-left: var(--width-header)
 

@@ -1,0 +1,21 @@
+{{ define "content" }}
+<div id="sign-in-up-container">
+	<h1 class="sign-in-up-title">Login</h1>
+	<form id="sign-in-up-form" hx-post="/sign-in" hx-target="#errors" hx-swap="outerHTML transition:true" hx-ext="remove-content">
+		<div class="form-group">
+			<label class="form-label" for="email">Email*:</label>
+			<input class="form-input" type="email" id="email" name="email" required>
+		</div>
+		<div class="form-group">
+			<label class="form-label" for="password">Password*:</label>
+			<input class="form-input" type="password" id="password" name="password" required
+			       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+			>
+		</div>
+		<button class="form-submit" id="form-submit" type="submit" disabled>Sign In</button>
+		<div id="errors" remove-content="10s"></div>
+	</form>
+	<p class="signup-link">Or <a href="/sign-up">Sign Up</a></p>
+	<p class="lost-user">Lost information</p>
+</div>
+{{ end }}

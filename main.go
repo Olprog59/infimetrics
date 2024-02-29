@@ -15,6 +15,8 @@ import (
 func init() {
 	golog.SetLanguage("fr")
 	golog.EnableFileNameLogging()
+	golog.SetTimePrecision(golog.MICRO)
+	golog.SetSeparator(" | ")
 }
 
 func main() {
@@ -23,7 +25,7 @@ func main() {
 		golog.Err(err.Error())
 		panic(err)
 	}
-	golog.Info("I'm running on host %s", cfg.Host)
+	golog.Success("I'm running on host %s", cfg.Host)
 
 	db, dbConnect := loadDatabase(cfg, err)
 	redis := loadRedis(cfg)
@@ -35,10 +37,12 @@ func main() {
 	}()
 
 	r := router.NewRouter(dbConnect, redis)
+	r.Use(router.DbAndRedisMiddleware(dbConnect, redis))
+	r.Use(router.AuthMiddleware)    // Ajoute le middleware d'authentification
 	r.Use(router.LoggingMiddleware) // Ajoute le middleware de journalisation
 	r.RegisterRoutes()
 
-	golog.Info("Server is running on %s %d", cfg.Host, cfg.Port)
+	golog.Success("Server is running on %s %d", cfg.Host, cfg.Port)
 	err = http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), nil)
 	if err != nil {
 		golog.Err(err.Error())

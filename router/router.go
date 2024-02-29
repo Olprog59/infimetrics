@@ -3,7 +3,7 @@ package router
 import (
 	"database/sql"
 	"github.com/Olprog59/infimetrics/database"
-	"github.com/Olprog59/infimetrics/router/handlers"
+	"github.com/Olprog59/infimetrics/handlers"
 	"net/http"
 )
 
@@ -35,21 +35,33 @@ func NewRouter(db *sql.DB, redis *database.RedisDB) Router {
 
 func (r *httpRouter) RegisterRoutes() {
 	mux := http.NewServeMux()
-	// static files
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		handlers.PageNotFoundHandler(w, r)
+	})
+
+	// Routes pour les fichiers statiques
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/assets"))))
+
+	// Routes pour les pages
 	mux.HandleFunc("GET /{$}", handlers.HomeHandler())
 
-	mux.HandleFunc("/with-db", dbMiddleware(r.DB)(handlers.WithDBHandler()))
+	// Routes pour la connexion et l'inscription
+	mux.HandleFunc("/sign-in", handlers.LoginHandler())
+	mux.HandleFunc("/sign-up", handlers.RegisterHandler())
 
-	mux.HandleFunc("/with-redis", dbMiddleware(r.DB)(handlers.WithRedisHandler(r.Redis)))
+	// Routes pour la vérification des données d'inscription
+	mux.HandleFunc("POST /sign-up/email", handlers.SignUpEmail())
+	mux.HandleFunc("POST /sign-up/username", handlers.SignUpUsername())
+	mux.HandleFunc("POST /sign-up/password", handlers.SignUpPassword())
+	mux.HandleFunc("POST /sign-up/same-password", handlers.SignUpPasswordSame())
 
-	// Appliquer les middlewares dans l'ordre inverse de leur ajout
-	// pour que le premier middleware ajouté soit exécuté en premier.
+	mux.HandleFunc("/dashboard", handlers.DashboardHandler())
+
 	handler := http.Handler(mux)
 	for i := len(r.middlewares) - 1; i >= 0; i-- {
 		handler = r.middlewares[i](handler)
 	}
 
-	// Utiliser le handler final comme handler de notre serveur
 	http.Handle("/", handler)
 }

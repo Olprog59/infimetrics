@@ -1,0 +1,34 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/css/base.css">
+	<link rel="stylesheet" href="/static/css/index.css">
+	{{ range .CSS }}
+	<link rel="stylesheet" href="/static/css/{{ . }}.css">
+	{{ end }}
+
+	<script src="/static/js/htmx.min.js" defer></script>
+	<script src="/static/js/remove-content.js" defer></script>
+	<title>{{.Title}}</title>
+</head>
+<body>
+<div class="container">
+	<header>
+		<h1>Header</h1>
+	</header>
+
+	<main>
+		{{ template "content" . }}
+	</main>
+</div>
+
+<script src="/static/js/sign-in-up.js"></script>
+{{ range .JS }}
+<script src="/static/js/{{.}}.js"></script>
+{{ end }}
+</body>
+</html>
+{{end}}

@@ -1,0 +1,63 @@
+{{ define "content" }}
+<div id="sign-in-up-container">
+	<h1 class="sign-in-up-title">Register</h1>
+	<form id="sign-in-up-form" hx-post="/sign-up" hx-target="#errors" hx-swap="outerHTML transition:true" hx-ext="remove-content">
+		<div class="form-group">
+			<label class="form-label" for="email">Email*:</label>
+			<input class="form-input" type="email" id="email" name="email" required
+			       hx-post="/sign-up/email"
+			       hx-swap="innerHTML"
+			       hx-swap-oob="none"
+			       hx-target="#error-email"
+			       hx-trigger="keyup changed delay:1s"
+			       hx-sync="this:replace"
+			       title="Please enter a valid email address."
+			>
+			<span class="info">Please enter a valid email address.</span>
+			<div id="error-email"></div>
+		</div>
+		<div class="form-group">
+			<label class="form-label" for="username">Name*:</label>
+			<input class="form-input" type="text" id="username" name="username" required
+			       pattern="^.{3,50}$"
+			       hx-post="/sign-up/username"
+			       hx-swap="innerHTML"
+			       hx-target="#error-username"
+			       hx-trigger="keyup changed delay:1s"
+			       hx-sync="this:replace"
+			>
+			<span class="info">Minimum length: 3 characters.</span>
+			<div id="error-username"></div>
+		</div>
+		<div class="form-group">
+			<label class="form-label" for="password">Password*:</label>
+			<input class="form-input" type="password" id="password" name="password" required
+			       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+			       hx-post="/sign-up/password"
+			       hx-swap="innerHTML"
+			       hx-target="#error-password"
+			       hx-trigger="keyup changed delay:1s"
+			       hx-sync="this:replace">
+			<span class="info">Minimum 8 characters, must include letters and numbers.</span>
+			<div id="error-password"></div>
+		</div>
+		<div class="form-group">
+			<label class="form-label" for="confirm-password">Confirm Password*:</label>
+			<input class="form-input" type="password" id="confirm-password" name="confirm-password" required
+			       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+			       hx-post="/sign-up/same-password"
+			       hx-swap="innerHTML"
+			       hx-target="#error-same-password"
+			       hx-trigger="keyup changed delay:1s"
+			       hx-sync="this:replace"
+			>
+			<span class="info">Must match the password entered above.</span>
+			<div id="error-same-password"></div>
+		</div>
+		<button class="form-submit" id="form-submit" type="submit" disabled>Sign Up</button>
+		<div id="errors" remove-content="10s"></div>
+	</form>
+	<p class="signin-link">Or <a href="/sign-in">Sign In</a></p>
+
+</div>
+{{ end }}

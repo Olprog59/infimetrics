@@ -5,6 +5,7 @@ import (
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/appconfig"
 	"github.com/go-redis/redis/v8"
+	"time"
 )
 
 type RedisDB struct {
@@ -32,6 +33,14 @@ func (r *RedisDB) Ping() error {
 
 func (r *RedisDB) Set(key string, value any) error {
 	err := r.Client.Set(r.Client.Context(), key, value, 0).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *RedisDB) SetWithTimeout(key string, value any, timeout time.Duration) error {
+	err := r.Client.Set(r.Client.Context(), key, value, timeout).Err()
 	if err != nil {
 		return err
 	}
