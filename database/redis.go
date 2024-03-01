@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/appconfig"
+	"github.com/Olprog59/infimetrics/commons"
 	"github.com/go-redis/redis/v8"
 	"time"
 )
@@ -12,10 +12,10 @@ type RedisDB struct {
 	Client *redis.Client
 }
 
-func NewRedis(cfg *appconfig.Redis) *RedisDB {
+func NewRedis() *RedisDB {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Password: cfg.Password,
+		Addr:     fmt.Sprintf("%s:%s", commons.REDIS_HOST, commons.REDIS_PORT),
+		Password: commons.REDIS_PASSWORD,
 		DB:       0,
 	})
 	return &RedisDB{
@@ -53,6 +53,14 @@ func (r *RedisDB) Get(key string) (string, error) {
 		return "", err
 	}
 	return val, nil
+}
+
+func (r *RedisDB) Del(key string) error {
+	err := r.Client.Del(r.Client.Context(), key).Err()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *RedisDB) Close() {

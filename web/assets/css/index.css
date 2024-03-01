@@ -9,6 +9,10 @@ header {
   color: var(--color-white);
 }
 
+a {
+  cursor: pointer;
+}
+
 .container > header {
   position: fixed;
   left: 0;

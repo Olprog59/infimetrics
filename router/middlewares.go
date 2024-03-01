@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/commons"
 	"github.com/Olprog59/infimetrics/database"
 	"net/http"
 	"strings"
@@ -60,7 +59,7 @@ func isAuthenticated(r *http.Request) bool {
 		golog.Warn("Error getting cookie")
 		return false
 	}
-	redis, ok := commons.FromContextRedis(r)
+	redis, ok := database.FromContextRedis(r)
 	if !ok {
 		golog.Warn("Could not get Redis connection from context")
 		return false

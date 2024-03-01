@@ -3,16 +3,14 @@ package handlers
 import (
 	"fmt"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/commons"
 	"github.com/Olprog59/infimetrics/database"
 	"github.com/Olprog59/infimetrics/models"
 	"net/http"
-	"time"
 )
 
 func LoginHandler() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, ok := commons.FromContextDB(r)
+		db, ok := database.FromContextDB(r)
 		if !ok {
 			golog.Warn("Could not get database connection from context")
 		}
@@ -35,24 +33,34 @@ func LoginHandler() func(http.ResponseWriter, *http.Request) {
 				return
 			}
 
-			var user = new(models.LoginModel)
-			user.Email = email
-			user.Password = password
-			user.DB = &database.Db{DB: db}
+			var login = new(models.LoginModel)
+			login.Email = email
+			login.Password = password
+			login.DB = &database.Db{DB: db}
 
-			redis, ok := commons.FromContextRedis(r)
+			redis, ok := database.FromContextRedis(r)
 			if !ok {
 				golog.Warn("Could not get redis connection from context")
 			}
-			user.Redis = redis
+			login.Redis = redis
 
-			ok = user.Login()
+			ok = login.Login()
 			if ok {
 				// Set the cookie
-				setCookieHandler(w, r, user.SessionToken)
+				setCookieHandler(w, r, login.SessionToken)
 				w.Header().Set("HX-Redirect", "/dashboard")
-
-				w.Write([]byte("User logged in successfully"))
+				go func() {
+					var user = new(models.UserModel)
+					err := user.ConvertLoginToUserModel(login)
+					if err != nil {
+						golog.Err("Could not convert login to user model")
+						return
+					}
+					err = user.UpdateLastLogin()
+					if err != nil {
+						return
+					}
+				}()
 				return
 			} else {
 				w.Header().Set("Content-Type", "text/html")
@@ -69,22 +77,4 @@ func LoginHandler() func(http.ResponseWriter, *http.Request) {
 			})
 		}
 	}
-}
-
-func setCookieHandler(w http.ResponseWriter, r *http.Request, value string) {
-	// Création du cookie
-	cookie := http.Cookie{
-		Name:     "session_token",
-		Value:    value,
-		Path:     "/",
-		Expires:  time.Now().Add(commons.TimeoutCookie),
-		MaxAge:   int(commons.TimeoutCookie.Seconds()),
-		Secure:   true,
-		HttpOnly: true,
-	}
-
-	// Ajout du cookie à la réponse
-	http.SetCookie(w, &cookie)
-
-	golog.Debug("Cookie défini")
 }

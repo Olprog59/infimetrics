@@ -8,11 +8,12 @@ import (
 )
 
 type Page struct {
-	Title  string
-	Data   any
-	CSS    []string
-	JS     []string
-	Errors []string
+	Title      string
+	Data       any
+	IsLoggedIn bool
+	CSS        []string
+	JS         []string
+	Errors     []string
 }
 
 func renderTemplate(w http.ResponseWriter, html string, page *Page) {

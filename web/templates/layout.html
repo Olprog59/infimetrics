@@ -18,6 +18,12 @@
 <div class="container">
 	<header>
 		<h1>Header</h1>
+
+		{{ if .IsLoggedIn }}
+		<div>
+			<a hx-get="/logout">logout</a>
+		</div>
+		{{ end }}
 	</header>
 
 	<main>

@@ -1,8 +1,30 @@
 version: '3.9'
 
 services:
-
-  db:
+  infimetrics: # Nom de ton service d'application
+    container_name: infimetrics
+    build: . # Chemin vers le dossier contenant le Dockerfile de ton application
+    ports:
+      - "8080:8080" # Mappage des ports (port_hôte:port_conteneur)
+    depends_on:
+      - postgresql
+      - redis
+    environment:
+      DB_HOST: postgresql
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_DRIVER: ${DB_DRIVER}
+      SSL_MODE: ${SSL_MODE}
+      HOST: "0.0.0.0"
+      PORT: ${PORT}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - infimetrics
+  postgresql:
     container_name: postgresql
     image: postgres:latest
     restart: unless-stopped

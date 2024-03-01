@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/appconfig"
+	"github.com/Olprog59/infimetrics/commons"
 )
 
 type IDB interface {
@@ -12,20 +12,17 @@ type IDB interface {
 }
 
 type Db struct {
-	DB       *sql.DB
-	Database *appconfig.Database
+	DB *sql.DB
 }
 
-func NewDB(database *appconfig.Database) IDB {
-	return &Db{
-		Database: database,
-	}
+func NewDB() IDB {
+	return &Db{}
 }
 
 func (d *Db) Connect() (*sql.DB, error) {
-	dbConnStr := "postgresql://" + d.Database.User + ":" + d.Database.Password + "@" + d.Database.Host + "/" + d.Database.Name + "?sslmode=" + d.Database.SslMode
+	dbConnStr := "postgresql://" + commons.DB_USER + ":" + commons.DB_PASSWORD + "@" + commons.DB_HOST + "/" + commons.DB_NAME + "?sslmode=" + commons.SSL_MODE
 	// Connect to database
-	db, err := sql.Open(d.Database.Driver, dbConnStr)
+	db, err := sql.Open(commons.DB_DRIVER, dbConnStr)
 	if err != nil {
 		golog.Err(err.Error())
 		return nil, err

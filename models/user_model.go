@@ -20,7 +20,7 @@ type UserModel struct {
 	Email        string             `json:"email"`
 	PasswordHash string             `json:"passwordHash"`
 	CreatedAt    time.Time          `json:"createdAt"`
-	LastLogin    time.Time          `json:"lastLogin"`
+	LastLogin    *time.Time         `json:"lastLogin"`
 	Applications []ApplicationModel `json:"applications"`
 }
 
@@ -69,7 +69,7 @@ func (u *UserModel) Register() error {
 
 func (l *LoginModel) Login() bool {
 	var hashedPassword string
-	var userId string
+	var userId uint
 	err := l.DB.DB.QueryRow("SELECT password_hash, user_id FROM users WHERE email = $1", l.Email).Scan(&hashedPassword, &userId)
 	if err != nil {
 		log.Println("Erreur lors de la récupération de l'utilisateur :", err)
@@ -94,6 +94,30 @@ func (l *LoginModel) Login() bool {
 		return false
 	}
 	return true
+}
+
+func (u *UserModel) UpdateLastLogin() error {
+	_, err := u.DB.DB.Exec("UPDATE users SET last_login = $1 WHERE user_id = $2", time.Now(), u.UserId)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (u *UserModel) ConvertLoginToUserModel(l *LoginModel) error {
+	u.DB = l.DB
+	u.Redis = l.Redis
+	user_id, err := u.Redis.Get(l.SessionToken)
+	if err != nil {
+		return err
+	}
+	err = u.DB.DB.QueryRow("SELECT user_id, username, email, last_login FROM users WHERE user_id = $1", user_id).Scan(&u.UserId, &u.Username, &u.Email, &u.LastLogin)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func IsUsernameExists(db *sql.DB, username string) bool {

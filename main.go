@@ -1,15 +1,15 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/appconfig"
+	"github.com/Olprog59/infimetrics/commons"
 	"github.com/Olprog59/infimetrics/database"
-	router "github.com/Olprog59/infimetrics/router"
+	"github.com/Olprog59/infimetrics/router"
 	_ "github.com/lib/pq"
 	"net/http"
+	"os"
 )
 
 func init() {
@@ -20,15 +20,19 @@ func init() {
 }
 
 func main() {
-	cfg, err := loadConfig()
-	if err != nil {
-		golog.Err(err.Error())
-		panic(err)
-	}
-	golog.Success("I'm running on host %s", cfg.Host)
 
-	db, dbConnect := loadDatabase(cfg, err)
-	redis := loadRedis(cfg)
+	dir, err := os.ReadDir(".")
+	if err != nil {
+		return
+	}
+	for _, file := range dir {
+		fmt.Println(file.Name())
+	}
+
+	golog.Success("I'm running on host %s", commons.HOST)
+
+	db, dbConnect := loadDatabase()
+	redis := loadRedis()
 
 	defer func() {
 		if err := db.Close(); err != nil {
@@ -42,15 +46,15 @@ func main() {
 	r.Use(router.LoggingMiddleware) // Ajoute le middleware de journalisation
 	r.RegisterRoutes()
 
-	golog.Success("Server is running on %s %d", cfg.Host, cfg.Port)
-	err = http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), nil)
+	golog.Success("Server is running on %s %s", commons.HOST, commons.PORT)
+	err = http.ListenAndServe(fmt.Sprintf("%s:%s", commons.HOST, commons.PORT), nil)
 	if err != nil {
 		golog.Err(err.Error())
 	}
 }
 
-func loadDatabase(cfg *appconfig.AppConfig, err error) (database.IDB, *sql.DB) {
-	db := database.NewDB(cfg.Database)
+func loadDatabase() (database.IDB, *sql.DB) {
+	db := database.NewDB()
 	dbConnect, err := db.Connect()
 	if err != nil {
 		golog.Debug(err.Error())
@@ -58,15 +62,11 @@ func loadDatabase(cfg *appconfig.AppConfig, err error) (database.IDB, *sql.DB) {
 	return db, dbConnect
 }
 
-func loadRedis(cfg *appconfig.AppConfig) *database.RedisDB {
-	redis := database.NewRedis(cfg.Redis)
+func loadRedis() *database.RedisDB {
+	redis := database.NewRedis()
 	err := redis.Ping()
 	if err != nil {
 		golog.Debug(err.Error())
 	}
 	return redis
-}
-
-func loadConfig() (*appconfig.AppConfig, error) {
-	return appconfig.LoadFromPath(context.Background(), "pkl/int/appConfig.pkl")
 }

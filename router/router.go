@@ -49,6 +49,7 @@ func (r *httpRouter) RegisterRoutes() {
 	// Routes pour la connexion et l'inscription
 	mux.HandleFunc("/sign-in", handlers.LoginHandler())
 	mux.HandleFunc("/sign-up", handlers.RegisterHandler())
+	mux.HandleFunc("/logout", handlers.LogoutHandler())
 
 	// Routes pour la vérification des données d'inscription
 	mux.HandleFunc("POST /sign-up/email", handlers.SignUpEmail())

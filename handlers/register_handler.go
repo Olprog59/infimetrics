@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/commons"
 	"github.com/Olprog59/infimetrics/database"
 	"github.com/Olprog59/infimetrics/models"
 	"net/http"
@@ -12,7 +11,7 @@ import (
 
 func RegisterHandler() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, ok := commons.FromContextDB(r)
+		db, ok := database.FromContextDB(r)
 		if !ok {
 			golog.Warn("Could not get database connection from context")
 		}
