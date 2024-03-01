@@ -5,7 +5,7 @@ services:
     container_name: infimetrics
     build: . # Chemin vers le dossier contenant le Dockerfile de ton application
     ports:
-      - "80:${PORT}" # Mappage des ports (port_hôte:port_conteneur)
+      - "9090:${PORT}" # Mappage des ports (port_hôte:port_conteneur)
     depends_on:
       - postgresql
       - redis
