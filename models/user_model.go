@@ -78,7 +78,7 @@ func (l *LoginModel) Login() bool {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(l.Password))
 	if err != nil {
-		log.Println("Erreur lors de la comparaison des mots de passe :", err)
+		golog.Err("Erreur lors de la comparaison des mots de passe : %s", err.Error())
 		return false
 	}
 

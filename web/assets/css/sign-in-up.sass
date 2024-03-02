@@ -1,6 +1,8 @@
+$radius: 4px
+
 =form-input
 	border: 1px solid var(--color-primary)
-	border-radius: 4px
+	border-radius: $radius
 	padding: 10px
 	width: 100%
 
@@ -27,6 +29,27 @@
 				display: block
 				margin-bottom: 5px
 
+			div.input-container
+				position: relative
+
+				& > div.toggle-password
+					position: absolute
+					right: 1px
+					top: 1px
+					bottom: 1px
+					width: 32px
+					border-left: 1px solid var(--color-primary)
+					border-top-right-radius: $radius
+					border-bottom-right-radius: $radius
+					display: flex
+					justify-content: center
+					align-items: center
+					padding: 0 1.2rem
+					transition: background-color 300ms ease-in-out
+
+					&:hover
+						background-color: var(--color-light-gray)
+
 			.form-input
 				+form-input
 
@@ -49,24 +72,7 @@
 			&:disabled
 				opacity: 0.6
 
-		#errors
-			position: fixed
-			top: 0
-			left: var(--width-header)
-			right: 0
-			padding: 1rem
-			font-size: 1.3rem
-			text-align: center
-			background-color: var(--color-secondary)
-			color: var(--color-white)
-			animation: fade-in 1s ease-in-out, fade-out 1s 9s ease-in-out
-			opacity: 0
-			visibility: hidden
 
-
-		#errors:not(:empty)
-			opacity: 1
-			visibility: visible
 
 
 	.signup-link, .signin-link
@@ -81,16 +87,5 @@
 				text-decoration: underline
 
 
-@keyframes fade-in
-	from
-		opacity: 0
-		visibility: hidden
-		transform: translateY(-100%)
 
-
-@keyframes fade-out
-	to
-		opacity: 0
-		visibility: hidden
-		transform: translateY(-100%)
 

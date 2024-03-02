@@ -74,14 +74,18 @@ func validateEmail(db *sql.DB, email string) (bool, error) {
 
 // validatePassword vérifie que le mot de passe est valide.
 func validatePassword(password string) (bool, error) {
-	if len(password) < 8 {
-		return false, errors.New("password must be at least 8 characters long")
+	if len(password) < 8 && len(password) > 64 {
+		return false, errors.New("password must be between 8 and 64 characters long")
 	}
-	hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
-	hasLower := regexp.MustCompile(`[a-z]`).MatchString(password)
+	hasUpper := regexp.MustCompile(`\p{Lu}`).MatchString(password)
+	hasLower := regexp.MustCompile(`\p{Ll}`).MatchString(password)
 	hasDigit := regexp.MustCompile(`\d`).MatchString(password)
+	hasSpecial := regexp.MustCompile(`[^\p{L}\p{N}]`).MatchString(password)
 
-	return hasUpper && hasLower && hasDigit, nil
+	if hasUpper && hasLower && hasDigit && hasSpecial {
+		return true, nil
+	}
+	return false, errors.New("password must contain at least one uppercase letter, one lowercase letter, one number and one special character")
 }
 
 // validateConfirmPassword vérifie que le mot de passe de confirmation correspond au mot de passe.
@@ -94,8 +98,13 @@ func validateConfirmPassword(password, confirmPassword string) (bool, error) {
 
 // validateUsername vérifie que le nom d'utilisateur est valide.
 func validateUsername(db *sql.DB, username string) (bool, error) {
-	if len(username) < 3 {
-		return false, errors.New("username must be at least 3 characters long")
+	if len(username) < 3 || len(username) > 15 {
+		return false, errors.New("username must be between 3 and 15 characters long")
+	}
+
+	reg := regexp.MustCompile(`^[\p{L}0-9_-]+$`)
+	if !reg.MatchString(username) {
+		return false, errors.New("username must contain only letters, numbers, - and _")
 	}
 
 	if models.IsUsernameExists(db, username) {

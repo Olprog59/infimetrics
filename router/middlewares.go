@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/database"
 	"net/http"
@@ -10,9 +11,26 @@ import (
 	"time"
 )
 
+const (
+	SignInPath  = "/sign-in"
+	SignUpPath  = "/sign-up"
+	FaviconPath = "/favicon.ico"
+	StaticPath  = "/static/"
+)
+
+func isPublicPath(path string) bool {
+	publicPaths := []string{SignInPath, SignUpPath, FaviconPath, StaticPath}
+	for _, p := range publicPaths {
+		if path == p || strings.HasPrefix(path, p) {
+			return true
+		}
+	}
+	return false
+}
+
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, "/static/") {
+		if strings.HasPrefix(r.URL.Path, StaticPath) {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -37,18 +55,30 @@ func DbAndRedisMiddleware(db *sql.DB, redis *database.RedisDB) func(http.Handler
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Check if user is authenticated
-		if r.URL.Path == "/sign-in" ||
-			strings.HasPrefix(r.URL.Path, "/sign-up") ||
-			r.URL.Path == "/favicon.ico" ||
-			strings.HasPrefix(r.URL.Path, "/static/") {
+		if isPublicPath(r.URL.Path) {
 			next.ServeHTTP(w, r)
 			return
 		}
+
 		if !isAuthenticated(r) {
-			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+			golog.Warn("User is not authenticated")
+			golog.Debug("Request: %s", r.URL.Path)
+
+			if r.Header.Get("HX-Request") == "true" {
+				w.Header().Set("Content-Type", "text/plain")
+				w.WriteHeader(http.StatusUnauthorized)
+				_, err := fmt.Fprint(w, "Unauthorized - Please log in")
+				if err != nil {
+					return
+				}
+				return
+			}
+
+			// Utilise HX-Redirect pour les redirections côté client avec HTMX
+			http.Redirect(w, r, SignInPath, http.StatusSeeOther)
 			return
 		}
+
 		next.ServeHTTP(w, r)
 	})
 }
@@ -65,12 +95,12 @@ func isAuthenticated(r *http.Request) bool {
 		return false
 	}
 
-	username, err := redis.Get(sessionToken.Value)
+	_, err = redis.Get(sessionToken.Value)
 	if err != nil {
 		golog.Warn("Error getting value from Redis")
 		return false
 	}
 
-	golog.Success("User %s is authenticated", username)
+	//golog.Success("User %s is authenticated", username)
 	return true
 }

@@ -13,7 +13,10 @@ func LogoutHandler() func(http.ResponseWriter, *http.Request) {
 			golog.Warn("Could not get session token from cookie")
 			return
 		}
-		clearCookieHandler(w, "session_token")
+
+		for _, cookieName := range ListCookieNames() {
+			clearCookieHandler(w, cookieName)
+		}
 		redis, ok := database.FromContextRedis(r)
 		if !ok {
 			golog.Warn("Could not get redis connection from context")

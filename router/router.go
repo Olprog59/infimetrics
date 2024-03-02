@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/database"
 	"github.com/Olprog59/infimetrics/handlers"
 	"net/http"
@@ -37,6 +38,7 @@ func (r *httpRouter) RegisterRoutes() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		golog.Debug("Page not found: %s", r.URL.Path)
 		handlers.PageNotFoundHandler(w, r)
 	})
 
@@ -56,6 +58,9 @@ func (r *httpRouter) RegisterRoutes() {
 	mux.HandleFunc("POST /sign-up/username", handlers.SignUpUsername())
 	mux.HandleFunc("POST /sign-up/password", handlers.SignUpPassword())
 	mux.HandleFunc("POST /sign-up/same-password", handlers.SignUpPasswordSame())
+
+	// Get Cookies
+	mux.HandleFunc("GET /get-cookies/username", handlers.GetCookiesUsernameHandler())
 
 	mux.HandleFunc("/dashboard", handlers.DashboardHandler())
 

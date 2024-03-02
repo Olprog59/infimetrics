@@ -9,7 +9,6 @@ import (
 	"github.com/Olprog59/infimetrics/router"
 	_ "github.com/lib/pq"
 	"net/http"
-	"os"
 )
 
 func init() {
@@ -20,14 +19,6 @@ func init() {
 }
 
 func main() {
-
-	dir, err := os.ReadDir(".")
-	if err != nil {
-		return
-	}
-	for _, file := range dir {
-		fmt.Println(file.Name())
-	}
 
 	golog.Success("I'm running on host %s", commons.HOST)
 
@@ -47,7 +38,7 @@ func main() {
 	r.RegisterRoutes()
 
 	golog.Success("Server is running on %s %s", commons.HOST, commons.PORT)
-	err = http.ListenAndServe(fmt.Sprintf("%s:%s", commons.HOST, commons.PORT), nil)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", commons.HOST, commons.PORT), nil)
 	if err != nil {
 		golog.Err(err.Error())
 	}

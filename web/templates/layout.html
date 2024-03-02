@@ -12,21 +12,31 @@
 
 	<script src="/static/js/htmx.min.js" defer></script>
 	<script src="/static/js/remove-content.js" defer></script>
+
 	<title>{{.Title}}</title>
 </head>
-<body>
+<body hx-ext="remove-content">
 <div class="container">
 	<header>
-		<h1>Header</h1>
-
+		<div class="header__title">
+			<p>Welcome</p>
+			{{ if .IsLoggedIn }}
+			<p id="cookie-username" hx-get="/get-cookies/username" hx-swap="innerHTML" hx-trigger="revealed"></p>
+			{{ end }}
+		</div>
 		{{ if .IsLoggedIn }}
-		<div>
-			<a hx-get="/logout">logout</a>
+		<div class="header__main">
+		</div>
+		<div class="header__footer">
+			<div class="header__footer__logout" hx-get="/logout" hx-confirm="Are you sure you wish to delete your account?">
+				<img src="/static/icons/logout.svg" alt="logout" title="logout">
+			</div>
 		</div>
 		{{ end }}
 	</header>
 
 	<main>
+		<div id="errors" remove-content="10s"></div>
 		{{ template "content" . }}
 	</main>
 </div>
@@ -35,6 +45,7 @@
 {{ range .JS }}
 <script src="/static/js/{{.}}.js"></script>
 {{ end }}
+<script src="/static/js/main.js"></script>
 </body>
 </html>
 {{end}}

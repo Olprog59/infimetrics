@@ -3,22 +3,43 @@ body
 	color: var(--color-primary)
 	font-family: 'Luciole', sans-serif
 
-
-header
-	background-color: var(--color-primary)
-	color: var(--color-white)
-
 a
 	cursor: pointer
 
+@import "partials/header"
+
 .container
-	& > header
-		position: fixed
-		left: 0
-		top: 0
-		bottom: 0
-		width: var(--width-header)
 
 	& > main
 		padding-left: var(--width-header)
 
+		#errors
+			position: fixed
+			top: 0
+			left: var(--width-header)
+			right: 0
+			padding: 1rem
+			font-size: 1.3rem
+			text-align: center
+			background-color: var(--color-secondary)
+			color: var(--color-white)
+			animation: fade-in 1s ease-in-out, fade-out 1s 9s ease-in-out
+			opacity: 0
+			visibility: hidden
+		#errors:not(:empty)
+			opacity: 1
+			visibility: visible
+
+
+@keyframes fade-in
+	from
+		opacity: 0
+		visibility: hidden
+		transform: translateY(-100%)
+
+
+@keyframes fade-out
+	to
+		opacity: 0
+		visibility: hidden
+		transform: translateY(-100%)

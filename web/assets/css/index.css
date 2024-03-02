@@ -4,11 +4,6 @@ body {
   font-family: "Luciole", sans-serif;
 }
 
-header {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-}
-
 a {
   cursor: pointer;
 }
@@ -19,9 +14,74 @@ a {
   top: 0;
   bottom: 0;
   width: var(--width-header);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
+.container > header div.header__title p {
+  padding-left: 0.2rem;
+  padding-top: 0.2rem;
+}
+.container > header div.header__title p:nth-child(1) {
+  font-size: 2rem;
+}
+.container > header div.header__title p:nth-child(2) {
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+.container > header div.header__footer .header__footer__logout {
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 0.2rem;
+  text-align: center;
+}
+.container > header div.header__footer .header__footer__logout:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+.container > header div.header__footer .header__footer__logout img[alt=logout] {
+  width: 32px;
+  height: 32px;
+}
+
 .container > main {
   padding-left: var(--width-header);
+}
+.container > main #errors {
+  position: fixed;
+  top: 0;
+  left: var(--width-header);
+  right: 0;
+  padding: 1rem;
+  font-size: 1.3rem;
+  text-align: center;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  animation: fade-in 1s ease-in-out, fade-out 1s 9s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+.container > main #errors:not(:empty) {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-100%);
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-100%);
+  }
 }
 
 /*# sourceMappingURL=index.css.map */

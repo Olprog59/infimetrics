@@ -9,7 +9,7 @@
 			       hx-swap="innerHTML"
 			       hx-swap-oob="none"
 			       hx-target="#error-email"
-			       hx-trigger="keyup changed delay:1s"
+			       hx-trigger="keyup changed delay:500ms"
 			       hx-sync="this:replace"
 			       title="Please enter a valid email address."
 			>
@@ -19,39 +19,54 @@
 		<div class="form-group">
 			<label class="form-label" for="username">Name*:</label>
 			<input class="form-input" type="text" id="username" name="username" required
-			       pattern="^.{3,50}$"
+			       pattern="^[a-zA-Z0-9_\-]{3,15}$"
+			       minlength="3"
+			       maxlength="15"
 			       hx-post="/sign-up/username"
 			       hx-swap="innerHTML"
 			       hx-target="#error-username"
-			       hx-trigger="keyup changed delay:1s"
+			       hx-trigger="keyup changed delay:500ms"
 			       hx-sync="this:replace"
 			>
-			<span class="info">Minimum length: 3 characters.</span>
+			<span class="info">The username must contain only letters, numbers, underscores, or hyphens, and be between 3 and 15 characters long.</span>
 			<div id="error-username"></div>
 		</div>
 		<div class="form-group">
 			<label class="form-label" for="password">Password*:</label>
-			<input class="form-input" type="password" id="password" name="password" required
-			       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-			       hx-post="/sign-up/password"
-			       hx-swap="innerHTML"
-			       hx-target="#error-password"
-			       hx-trigger="keyup changed delay:1s"
-			       hx-sync="this:replace">
-			<span class="info">Minimum 8 characters, must include letters and numbers.</span>
+			<div class="input-container">
+				<input class="form-input" type="password" id="password" name="password" required
+				       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,64}"
+				       minlength="8"
+				       maxlength="64"
+				       hx-post="/sign-up/password"
+				       hx-swap="innerHTML"
+				       hx-target="#error-password"
+				       hx-trigger="keyup changed delay:500ms"
+				       hx-sync="this:replace">
+				<div class="toggle-password" onclick="togglePassword(this)" hx-target="#password">
+                    <img src="/static/icons/visibility.png" alt="toggle password visibility">
+                 </div>
+			</div>
+			<span class="info">The password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be between 8 and 64 characters long.</span>
 			<div id="error-password"></div>
 		</div>
 		<div class="form-group">
 			<label class="form-label" for="confirm-password">Confirm Password*:</label>
-			<input class="form-input" type="password" id="confirm-password" name="confirm-password" required
-			       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-			       hx-post="/sign-up/same-password"
-			       hx-swap="innerHTML"
-			       hx-target="#error-same-password"
-			       hx-trigger="keyup changed delay:1s"
-			       hx-sync="this:replace"
-			>
-			<span class="info">Must match the password entered above.</span>
+			<div class="input-container">
+				<input class="form-input" type="password" id="confirm-password" name="confirm-password" required
+				       pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_]).{8,64}"
+				       minlength="8"
+				       maxlength="64"
+				       hx-post="/sign-up/same-password"
+				       hx-swap="innerHTML"
+				       hx-target="#error-same-password"
+				       hx-trigger="keyup changed delay:500ms"
+				       hx-sync="this:replace">
+				<div class="toggle-password" onclick="togglePassword(this)" hx-target="#confirm-password">
+                    <img src="/static/icons/visibility.png" alt="toggle password visibility">
+                </div>
+			</div>
+			<span class="info">Must match the password entered above and contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be between 8 and 64 characters long.</span>
 			<div id="error-same-password"></div>
 		</div>
 		<button class="form-submit" id="form-submit" type="submit" disabled>Sign Up</button>
