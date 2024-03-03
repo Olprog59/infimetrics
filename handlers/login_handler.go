@@ -60,7 +60,7 @@ func LoginHandler() func(http.ResponseWriter, *http.Request) {
 					return
 				}
 				setCookieHandler(w, r, SessionToken, login.SessionToken)
-				w.Header().Set("HX-Redirect", "/dashboard")
+				w.Header().Set("HX-Redirect", "/")
 				return
 			} else {
 				w.Header().Set("Content-Type", "text/html")
