@@ -103,6 +103,7 @@ func validateUsername(db *sql.DB, username string) (bool, error) {
 	}
 
 	reg := regexp.MustCompile(`^[\p{L}0-9_-]+$`)
+	golog.Debug("Username: %s", username)
 	if !reg.MatchString(username) {
 		return false, errors.New("username must contain only letters, numbers, - and _")
 	}

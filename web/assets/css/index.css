@@ -214,8 +214,8 @@ a {
   padding: 1rem;
   font-size: 1.3rem;
   text-align: center;
-  background-color: #ffffff;
-  color: var(--color-white);
+  background-color: #E4572E;
+  color: #ffffff;
   animation: fade-in 1s ease-in-out, fade-out 1s 9s ease-in-out;
   opacity: 0;
   visibility: hidden;

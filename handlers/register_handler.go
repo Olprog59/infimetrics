@@ -71,7 +71,7 @@ func ValidateRegisterForm(r *http.Request, db *sql.DB, username, email, password
 	if valid, err := validateEmail(db, email); !valid {
 		return false, err
 	}
-	if valid, err := validateUsername(db, password); !valid {
+	if valid, err := validateUsername(db, username); !valid {
 		return false, err
 	}
 	if valid, err := validatePassword(password); !valid {

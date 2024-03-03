@@ -1,17 +1,20 @@
 package handlers
 
 import (
-	"html/template"
 	"net/http"
 )
 
 func HomeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// template
-		tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
-		err := tmpl.Execute(w, nil)
+		w.Header().Set("Content-Type", "text/html")
+		session_token, err := getCookie(r, "session_token")
 		if err != nil {
 			return
 		}
+		renderTemplate(w, "dashboard", &Page{
+			Title:      "Dashboard",
+			CSS:        []string{"dashboard"},
+			IsLoggedIn: session_token != "",
+		})
 	}
 }
