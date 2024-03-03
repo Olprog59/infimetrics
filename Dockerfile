@@ -8,7 +8,7 @@ ARG GOARCH=amd64
 
 ENV CGO_ENABLED 0
 
-RUN apk update --no-cache && apk add --no-cache git tzdata gcc g++ make
+RUN apk update --no-cache && apk add --no-cache git tzdata ca-certificates
 
 # Définis le répertoire de travail
 WORKDIR /app

@@ -55,7 +55,7 @@ func RegisterHandler() func(http.ResponseWriter, *http.Request) {
 
 			return
 		} else if r.Method == "GET" {
-			renderTemplate(w, "register", &Page{
+			renderTemplate(w, r, "register", &Page{
 				Title: "Register",
 				CSS:   []string{"sign-in-up"},
 			})

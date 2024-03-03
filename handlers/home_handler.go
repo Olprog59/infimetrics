@@ -11,7 +11,7 @@ func HomeHandler() http.HandlerFunc {
 		if err != nil {
 			return
 		}
-		renderTemplate(w, "dashboard", &Page{
+		renderTemplate(w, r, "dashboard", &Page{
 			Title:      "Dashboard",
 			CSS:        []string{"dashboard"},
 			IsLoggedIn: session_token != "",

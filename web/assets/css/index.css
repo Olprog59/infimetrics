@@ -32,7 +32,7 @@
   --width-header: 60px;
 }
 
-main {
+main > div.not-found {
   display: flex;
   justify-content: center;
   align-items: center;

@@ -71,7 +71,7 @@ func LoginHandler() func(http.ResponseWriter, *http.Request) {
 				return
 			}
 		} else if r.Method == "GET" {
-			renderTemplate(w, "login", &Page{
+			renderTemplate(w, r, "login", &Page{
 				Title: "Login",
 				CSS:   []string{"sign-in-up"},
 			})

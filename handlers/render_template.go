@@ -16,7 +16,7 @@ type Page struct {
 	Errors     []string
 }
 
-func renderTemplate(w http.ResponseWriter, html string, page *Page) {
+func renderTemplate(w http.ResponseWriter, r *http.Request, html string, page *Page) {
 	// Chemin vers le dossier des templates
 	templatesDir := "web/templates/"
 
@@ -30,7 +30,12 @@ func renderTemplate(w http.ResponseWriter, html string, page *Page) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-
+	session_token, _ := getCookie(r, "session_token")
+	//if err != nil {
+	//	golog.Err("Error getting cookie: %v", err)
+	//	return
+	//}
+	page.IsLoggedIn = session_token != ""
 	// Exécute le template de layout avec les données fournies
 	err = tmpl.ExecuteTemplate(w, "layout", page)
 	if err != nil {
