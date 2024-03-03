@@ -70,7 +70,8 @@ func (u *UserModel) Register() error {
 func (l *LoginModel) Login() bool {
 	var hashedPassword string
 	var userId uint
-	err := l.DB.DB.QueryRow("SELECT password_hash, user_id FROM users WHERE email = $1", l.Email).Scan(&hashedPassword, &userId)
+	var username string
+	err := l.DB.DB.QueryRow("SELECT password_hash, user_id, username FROM users WHERE email = $1", l.Email).Scan(&hashedPassword, &userId, &username)
 	if err != nil {
 		log.Println("Erreur lors de la récupération de l'utilisateur :", err)
 		return false
@@ -86,9 +87,11 @@ func (l *LoginModel) Login() bool {
 	l.SessionToken = sessionToken
 
 	golog.Debug("Session token: %s", sessionToken)
-	golog.Debug("User id: %s", userId)
+	golog.Debug("User id: %v", userId)
+	golog.Debug("Username: %s", username)
 
-	err = l.Redis.SetWithTimeout(sessionToken, userId, commons.TimeoutCookie)
+	err = l.Redis.HSetWithTimeout(sessionToken, map[string]any{"userID": userId, "username": username}, commons.TimeoutCookie)
+	//err = l.Redis.SetWithTimeout(sessionToken, userId, commons.TimeoutCookie)
 	if err != nil {
 		log.Println("Erreur lors de la sauvegarde du token de session :", err)
 		return false
@@ -108,11 +111,11 @@ func (u *UserModel) UpdateLastLogin() error {
 func (u *UserModel) ConvertLoginToUserModel(l *LoginModel) error {
 	u.DB = l.DB
 	u.Redis = l.Redis
-	user_id, err := u.Redis.Get(l.SessionToken)
+	userId, err := u.Redis.HGet(l.SessionToken, "userID")
 	if err != nil {
 		return err
 	}
-	err = u.DB.DB.QueryRow("SELECT user_id, username, email, last_login FROM users WHERE user_id = $1", user_id).Scan(&u.UserId, &u.Username, &u.Email, &u.LastLogin)
+	err = u.DB.DB.QueryRow("SELECT user_id, username, email, last_login FROM users WHERE user_id = $1", userId).Scan(&u.UserId, &u.Username, &u.Email, &u.LastLogin)
 	if err != nil {
 		return err
 	}

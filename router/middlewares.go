@@ -59,8 +59,8 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-
-		if !isAuthenticated(r) {
+		username, ok := isAuthenticated(r)
+		if !ok {
 			golog.Warn("User is not authenticated")
 			golog.Debug("Request: %s", r.URL.Path)
 
@@ -73,34 +73,40 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				}
 				return
 			}
-
+			w.Header().Set("HX-Redirect", SignInPath)
 			// Utilise HX-Redirect pour les redirections côté client avec HTMX
 			http.Redirect(w, r, SignInPath, http.StatusSeeOther)
 			return
 		}
-
+		w.Header().Set("HX-Current-Username", username)
 		next.ServeHTTP(w, r)
 	})
 }
 
-func isAuthenticated(r *http.Request) bool {
+func isAuthenticated(r *http.Request) (string, bool) {
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil {
 		golog.Warn("Error getting cookie")
-		return false
+		return "", false
 	}
 	redis, ok := database.FromContextRedis(r)
 	if !ok {
 		golog.Warn("Could not get Redis connection from context")
-		return false
+		return "", false
 	}
 
-	_, err = redis.Get(sessionToken.Value)
+	_, err = redis.HGet(sessionToken.Value, "userID")
 	if err != nil {
 		golog.Warn("Error getting value from Redis")
-		return false
+		return "", false
+	}
+
+	username, err := redis.HGet(sessionToken.Value, "username")
+	if err != nil {
+		golog.Warn("Error getting value from Redis")
+		return "", false
 	}
 
 	//golog.Success("User %s is authenticated", username)
-	return true
+	return username, true
 }

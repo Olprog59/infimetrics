@@ -1,29 +1,23 @@
-document.body.addEventListener('htmx:responseError', function(evt) {
-    evt.preventDefault();
-    const errors = document.getElementById('errors');
-    // faire un switch qui gère les principales erreurs comme les erreurs 4** et 5**
-    switch (evt.detail.xhr.status.toString()[0]) {
-        case "4":
-            errors.innerHTML = "This page does not exist or you do not have the rights to access it.";
-            break;
-        case "5":
-            errors.innerHTML = "Internal Server Error. Please try again later.";
-            break;
-        default:
-            errors.innerHTML = "An error occurred. Please try again later.";
-    }
-});
+import "./partials/response_errors.js"
+import "./partials/sign-in-up.js"
 
-function togglePassword(span) {
-    console.log(span)
-    const passwordInput = span.previousElementSibling;
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        span.children[0].src = "/static/icons/visibility_off.png";
+const checkUsername= () => {
+    const username = localStorage.getItem('username')
+    if (username) {
+        document.querySelector('.header__footer__logout').textContent = username.slice(0,1).toUpperCase()
     } else {
-        passwordInput.type = "password";
-        span.children[0].classList.add("fa-eye-slash");
-        span.children[0].src = "/static/icons/visibility.png";
+        fetch(document.location.href)
+        .then(response => {
+            if (response.headers.get('HX-Current-Username') === null) {
+                console.log('no user')
+            } else {
+                const username = response.headers.get('HX-Current-Username')
+                document.querySelector('.header__footer__logout').textContent = username.slice(0,1).toUpperCase()
+                localStorage.setItem('username', username)
+            }
+        })
+        .catch(error => console.error('Error:', error))
     }
 }
 
+checkUsername()

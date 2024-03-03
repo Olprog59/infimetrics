@@ -47,8 +47,29 @@ func (r *RedisDB) SetWithTimeout(key string, value any, timeout time.Duration) e
 	return nil
 }
 
+// HSET with timeout
+func (r *RedisDB) HSetWithTimeout(key string, fields map[string]any, timeout time.Duration) error {
+	err := r.Client.HSet(r.Client.Context(), key, fields).Err()
+	if err != nil {
+		return err
+	}
+	err = r.Client.Expire(r.Client.Context(), key, timeout).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *RedisDB) Get(key string) (string, error) {
 	val, err := r.Client.Get(r.Client.Context(), key).Result()
+	if err != nil {
+		return "", err
+	}
+	return val, nil
+}
+
+func (r *RedisDB) HGet(key string, field string) (string, error) {
+	val, err := r.Client.HGet(r.Client.Context(), key, field).Result()
 	if err != nil {
 		return "", err
 	}

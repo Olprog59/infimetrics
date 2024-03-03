@@ -47,20 +47,20 @@ func LoginHandler() func(http.ResponseWriter, *http.Request) {
 			ok = login.Login()
 			if ok {
 				// Set the cookie
-				setCookieHandler(w, r, SessionToken, login.SessionToken)
-				w.Header().Set("HX-Redirect", "/dashboard")
 				var user = new(models.UserModel)
 				err := user.ConvertLoginToUserModel(login)
 				if err != nil {
 					golog.Err("Could not convert login to user model")
 					return
 				}
-				setCookieHandler(w, r, Username, user.Username)
+				//setCookieHandler(w, r, Username, user.Username)
 				err = user.UpdateLastLogin()
 				if err != nil {
 					golog.Err("Could not update last login")
 					return
 				}
+				setCookieHandler(w, r, SessionToken, login.SessionToken)
+				w.Header().Set("HX-Redirect", "/dashboard")
 				return
 			} else {
 				w.Header().Set("Content-Type", "text/html")

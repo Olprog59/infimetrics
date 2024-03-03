@@ -4,14 +4,10 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="/static/css/base.css">
 	<link rel="stylesheet" href="/static/css/index.css">
-	{{ range .CSS }}
-	<link rel="stylesheet" href="/static/css/{{ . }}.css">
-	{{ end }}
 
-	<script src="/static/js/htmx.min.js" defer></script>
-	<script src="/static/js/remove-content.js" defer></script>
+	<script src="/static/js/htmx/htmx.min.js" defer></script>
+	<script src="/static/js/htmx/remove-content.js" defer></script>
 
 	<title>{{.Title}}</title>
 </head>
@@ -19,17 +15,17 @@
 <div class="container">
 	<header>
 		<div class="header__title">
-			<p>Welcome</p>
-			{{ if .IsLoggedIn }}
-			<p id="cookie-username" hx-get="/get-cookies/username" hx-swap="innerHTML" hx-trigger="revealed"></p>
-			{{ end }}
+			<div class="header__logo">
+				<img src="/static/icons/infinity.png" alt="">
+			</div>
 		</div>
 		{{ if .IsLoggedIn }}
 		<div class="header__main">
 		</div>
 		<div class="header__footer">
+<!--			<p id="cookie-username" hx-get="/get-cookies/username" hx-swap="innerHTML" hx-trigger="revealed"></p>-->
 			<div class="header__footer__logout" hx-get="/logout" hx-confirm="Are you sure you wish to delete your account?">
-				<img src="/static/icons/logout.svg" alt="logout" title="logout">
+				S
 			</div>
 		</div>
 		{{ end }}
@@ -41,11 +37,7 @@
 	</main>
 </div>
 
-<script src="/static/js/sign-in-up.js"></script>
-{{ range .JS }}
-<script src="/static/js/{{.}}.js"></script>
-{{ end }}
-<script src="/static/js/main.js"></script>
+<script src="/static/js/main.js" type="module"></script>
 </body>
 </html>
 {{end}}

@@ -1,6 +1,167 @@
+@font-face {
+  font-family: "Luciole";
+  src: url("/static/fonts/Luciole-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Luciole";
+  src: url("/static/fonts/Luciole-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Luciole";
+  src: url("/static/fonts/Luciole-Regular-Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Luciole";
+  src: url("/static/fonts/Luciole-Bold-Italic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --width-header: 60px;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.container > header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--width-header);
+  z-index: 10;
+  background-color: #212121;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+.container > header div.header__title div.header__logo img {
+  filter: invert(1);
+}
+.container > header div.header__footer .header__footer__logout {
+  background-color: #ffffff;
+  padding: 0.2rem;
+  text-align: center;
+  line-height: calc(var(--width-header) * 0.7);
+  transition: background-color 200ms ease-in-out, font-size 200ms ease-in-out;
+  width: calc(var(--width-header) * 0.7);
+  height: calc(var(--width-header) * 0.7);
+  border-radius: 50%;
+}
+.container > header div.header__footer .header__footer__logout:hover {
+  cursor: pointer;
+  font-size: 1.2rem;
+  background-color: #F07BA5;
+}
+
+#sign-in-up-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+#sign-in-up-container .sign-in-up-title {
+  color: #212121;
+  text-align: center;
+}
+#sign-in-up-container #sign-in-up-form .form-group {
+  margin-bottom: 20px;
+}
+#sign-in-up-container #sign-in-up-form .form-group .form-label {
+  display: block;
+  margin-bottom: 5px;
+}
+#sign-in-up-container #sign-in-up-form .form-group div.input-container {
+  position: relative;
+}
+#sign-in-up-container #sign-in-up-form .form-group div.input-container > div.toggle-password {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 32px;
+  border-left: 1px solid #212121;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1.2rem;
+  transition: background-color 300ms ease-in-out;
+}
+#sign-in-up-container #sign-in-up-form .form-group div.input-container > div.toggle-password:hover {
+  background-color: #C4C6C8;
+}
+#sign-in-up-container #sign-in-up-form .form-group .form-input {
+  border: 1px solid #212121;
+  border-radius: 4px;
+  padding: 10px;
+  width: 100%;
+}
+#sign-in-up-container #sign-in-up-form .form-group .info, #sign-in-up-container #sign-in-up-form .form-group [id^=error-] {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+#sign-in-up-container #sign-in-up-form .form-group .info {
+  color: #212121;
+}
+#sign-in-up-container #sign-in-up-form .form-group [id^=error-] {
+  color: #E4572E;
+}
+#sign-in-up-container #sign-in-up-form .form-submit {
+  background-color: #212121;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  width: 100%;
+}
+#sign-in-up-container #sign-in-up-form .form-submit:disabled {
+  opacity: 0.2;
+}
+#sign-in-up-container .signup-link, #sign-in-up-container .signin-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+#sign-in-up-container .signup-link a, #sign-in-up-container .signin-link a {
+  color: #E4572E;
+  text-decoration: none;
+}
+#sign-in-up-container .signup-link a:hover, #sign-in-up-container .signin-link a:hover {
+  text-decoration: underline;
+}
+
 body {
-  background-color: var(--color-white);
-  color: var(--color-primary);
+  background-color: #ffffff;
+  color: #212121;
   font-family: "Luciole", sans-serif;
 }
 
@@ -14,37 +175,32 @@ a {
   top: 0;
   bottom: 0;
   width: var(--width-header);
-  background-color: var(--color-primary);
-  color: var(--color-white);
   z-index: 10;
+  background-color: #212121;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
 }
-.container > header div.header__title p {
-  padding-left: 0.2rem;
-  padding-top: 0.2rem;
-}
-.container > header div.header__title p:nth-child(1) {
-  font-size: 2rem;
-}
-.container > header div.header__title p:nth-child(2) {
-  font-size: 1.5rem;
-  text-transform: capitalize;
+.container > header div.header__title div.header__logo img {
+  filter: invert(1);
 }
 .container > header div.header__footer .header__footer__logout {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: #ffffff;
   padding: 0.2rem;
   text-align: center;
+  line-height: calc(var(--width-header) * 0.7);
+  transition: background-color 200ms ease-in-out, font-size 200ms ease-in-out;
+  width: calc(var(--width-header) * 0.7);
+  height: calc(var(--width-header) * 0.7);
+  border-radius: 50%;
 }
 .container > header div.header__footer .header__footer__logout:hover {
-  background-color: rgba(255, 255, 255, 0.8);
   cursor: pointer;
-}
-.container > header div.header__footer .header__footer__logout img[alt=logout] {
-  width: 32px;
-  height: 32px;
+  font-size: 1.2rem;
+  background-color: #F07BA5;
 }
 
 .container > main {
@@ -58,7 +214,7 @@ a {
   padding: 1rem;
   font-size: 1.3rem;
   text-align: center;
-  background-color: var(--color-secondary);
+  background-color: #ffffff;
   color: var(--color-white);
   animation: fade-in 1s ease-in-out, fade-out 1s 9s ease-in-out;
   opacity: 0;
