@@ -102,8 +102,8 @@ func validateUsername(db *sql.DB, username string) (bool, error) {
 		return false, errors.New("username must be between 3 and 15 characters long")
 	}
 
-	reg := regexp.MustCompile(`^[\p{L}0-9_-]+$`)
-	golog.Debug("Username: %s", username)
+	reg := regexp.MustCompile(`^\p{L}[\p{L}0-9_-]{2,14}\p{L}$`)
+
 	if !reg.MatchString(username) {
 		return false, errors.New("username must contain only letters, numbers, - and _")
 	}

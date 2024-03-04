@@ -18,8 +18,9 @@ const (
 	StaticPath  = "/static/"
 )
 
+var publicPaths = []string{SignInPath, SignUpPath, FaviconPath, StaticPath}
+
 func isPublicPath(path string) bool {
-	publicPaths := []string{SignInPath, SignUpPath, FaviconPath, StaticPath}
 	for _, p := range publicPaths {
 		if path == p || strings.HasPrefix(path, p) {
 			return true
@@ -30,16 +31,12 @@ func isPublicPath(path string) bool {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasPrefix(r.URL.Path, StaticPath) {
-			next.ServeHTTP(w, r)
-			return
+		if !isPublicPath(r.URL.Path) {
+			start := time.Now()
+			defer golog.Debug("Completed in %v", time.Since(start))
+			golog.Debug("Started %s %s", r.Method, r.URL.Path)
 		}
-		start := time.Now()
-		golog.Debug("Started %s %s", r.Method, r.URL.Path)
-
 		next.ServeHTTP(w, r)
-
-		golog.Debug("Completed in %v", time.Since(start))
 	})
 }
 
@@ -59,54 +56,71 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		username, ok := isAuthenticated(r)
-		if !ok {
-			golog.Warn("User is not authenticated")
-			golog.Debug("Request: %s", r.URL.Path)
 
-			if r.Header.Get("HX-Request") == "true" {
-				w.Header().Set("Content-Type", "text/plain")
-				w.WriteHeader(http.StatusUnauthorized)
-				_, err := fmt.Fprint(w, "Unauthorized - Please log in")
-				if err != nil {
-					return
-				}
-				return
-			}
-			w.Header().Set("HX-Redirect", SignInPath)
-			// Utilise HX-Redirect pour les redirections côté client avec HTMX
-			http.Redirect(w, r, SignInPath, http.StatusSeeOther)
+		newCtx, username, ok := isAuthenticated(r)
+
+		if !ok {
+			handleUnauthenticatedUser(w, r)
 			return
 		}
+
 		w.Header().Set("HX-Current-Username", username)
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(newCtx))
 	})
 }
 
-func isAuthenticated(r *http.Request) (string, bool) {
+func handleUnauthenticatedUser(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Get("HX-Request") == "true" {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusUnauthorized)
+		_, err := fmt.Fprint(w, "Unauthorized - Please log in")
+		if err != nil {
+			return
+		}
+		return
+	}
+
+	w.Header().Set("HX-Redirect", SignInPath)
+	clearSessionCookie(w)
+	http.Redirect(w, r, SignInPath, http.StatusSeeOther)
+}
+
+func clearSessionCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+}
+
+func isAuthenticated(r *http.Request) (context.Context, string, bool) {
+	newCtx := context.WithValue(r.Context(), "isAuthenticated", false)
 	sessionToken, err := r.Cookie("session_token")
 	if err != nil {
 		golog.Warn("Error getting cookie")
-		return "", false
+		return newCtx, "", false
 	}
+
 	redis, ok := database.FromContextRedis(r)
 	if !ok {
 		golog.Warn("Could not get Redis connection from context")
-		return "", false
+		return newCtx, "", false
 	}
 
 	_, err = redis.HGet(sessionToken.Value, "userID")
 	if err != nil {
 		golog.Warn("Error getting value from Redis")
-		return "", false
+		return newCtx, "", false
 	}
 
 	username, err := redis.HGet(sessionToken.Value, "username")
 	if err != nil {
 		golog.Warn("Error getting value from Redis")
-		return "", false
+		return newCtx, "", false
 	}
 
-	//golog.Success("User %s is authenticated", username)
-	return username, true
+	newCtx = context.WithValue(r.Context(), "isAuthenticated", true)
+	return newCtx, username, true
 }

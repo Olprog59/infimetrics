@@ -4,7 +4,10 @@ import "./partials/sign-in-up.js"
 const checkUsername= () => {
     const username = localStorage.getItem('username')
     if (username) {
-        document.querySelector('.header__footer__logout').textContent = username.slice(0,1).toUpperCase()
+        const logout = document.querySelector('.header__footer__logout')
+        if (logout) {
+            logout.textContent = username.slice(0,1).toUpperCase()
+        }
     } else {
         fetch(document.location.href)
         .then(response => {
