@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/database"
 	"github.com/Olprog59/infimetrics/models"
 	"net/http"
 	"regexp"
@@ -13,15 +12,15 @@ import (
 
 func SignUpEmail() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, ok := database.FromContextDB(r)
+		store, ok := models.FromContextStore(r)
 		if !ok {
 			golog.Warn("Could not get database connection from context")
 		}
-		err := db.Ping()
+		err := store.DB.Ping()
 		if err != nil {
 			golog.Warn("Could not ping database")
 		}
-		if valid, err := validateEmail(db, r.FormValue("email")); !valid {
+		if valid, err := validateEmail(store.DB, r.FormValue("email")); !valid {
 			fmt.Fprint(w, err)
 			return
 		}
@@ -29,12 +28,12 @@ func SignUpEmail() func(http.ResponseWriter, *http.Request) {
 }
 func SignUpUsername() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, ok := database.FromContextDB(r)
+		store, ok := models.FromContextStore(r)
 		if !ok {
 			golog.Err("Could not get database connection")
 			return
 		}
-		if valid, err := validateUsername(db, r.FormValue("username")); !valid {
+		if valid, err := validateUsername(store.DB, r.FormValue("username")); !valid {
 			fmt.Fprint(w, err)
 			return
 		}
@@ -102,7 +101,7 @@ func validateUsername(db *sql.DB, username string) (bool, error) {
 		return false, errors.New("username must be between 3 and 15 characters long")
 	}
 
-	reg := regexp.MustCompile(`^\p{L}[\p{L}0-9_-]{2,14}\p{L}$`)
+	reg := regexp.MustCompile(`^\p{L}[\p{L}0-9_-]{1,13}\p{L}$`)
 
 	if !reg.MatchString(username) {
 		return false, errors.New("username must contain only letters, numbers, - and _")

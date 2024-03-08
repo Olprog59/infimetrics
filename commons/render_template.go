@@ -1,4 +1,4 @@
-package handlers
+package commons
 
 import (
 	"github.com/Olprog59/golog"
@@ -10,18 +10,20 @@ import (
 type Page struct {
 	Title      string
 	Data       any
+	AppToken   string
 	IsLoggedIn bool
-	CSS        []string
-	JS         []string
-	Errors     []string
 }
 
 var templatesDir = "web/templates/"
 
-func renderTemplate(w http.ResponseWriter, r *http.Request, html string, page *Page) {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, html string, page *Page) {
 	tmpl := parseTemplateFiles(w, html)
 	if tmpl == nil {
 		return
+	}
+
+	if page == nil {
+		page = &Page{}
 	}
 
 	isLoggedin, _ := r.Context().Value("isAuthenticated").(bool)

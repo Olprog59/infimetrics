@@ -2,16 +2,15 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/Olprog59/golog"
-	"github.com/Olprog59/infimetrics/database"
+	"github.com/Olprog59/infimetrics/commons"
 	"github.com/Olprog59/infimetrics/models"
 	"net/http"
 )
 
 func RegisterHandler() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, ok := database.FromContextDB(r)
+		store, ok := models.FromContextStore(r)
 		if !ok {
 			golog.Warn("Could not get database connection from context")
 		}
@@ -27,27 +26,29 @@ func RegisterHandler() func(http.ResponseWriter, *http.Request) {
 			password := r.FormValue("password")
 			confirmPassword := r.FormValue("confirm-password")
 
-			valid, err := ValidateRegisterForm(r, db, username, email, password, confirmPassword)
+			valid, err := ValidateRegisterForm(r, store.DB, username, email, password, confirmPassword)
 			if !valid {
-				w.Header().Set("Content-Type", "text/html")
-				_, err = fmt.Fprint(w, `<span id="errors" remove-content="10s">`+err.Error()+`</span>`)
-				if err != nil {
-					return
-				}
+				//w.Header().Set("Content-Type", "text/html")
+				//_, err = fmt.Fprint(w, `<span id="errors" remove-content="10s">`+err.Error()+`</span>`)
+				//if err != nil {
+				//	return
+				//}
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			var user = new(models.UserModel)
 			user.Username = username
 			user.Email = email
 			user.PasswordHash = password
-			user.DB = &database.Db{DB: db}
+			user.Store = store
 			err = user.Register()
 			if err != nil {
-				w.Header().Set("Content-Type", "text/html")
-				_, err = fmt.Fprint(w, `<span id="errors" remove-content="10s">`+err.Error()+`</span>`)
-				if err != nil {
-					return
-				}
+				//w.Header().Set("Content-Type", "text/html")
+				//_, err = fmt.Fprint(w, `<span id="errors" remove-content="10s">`+err.Error()+`</span>`)
+				//if err != nil {
+				//	return
+				//}
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			w.Header().Set("HX-Redirect", "/sign-in")
@@ -55,9 +56,8 @@ func RegisterHandler() func(http.ResponseWriter, *http.Request) {
 
 			return
 		} else if r.Method == "GET" {
-			renderTemplate(w, r, "register", &Page{
+			commons.RenderTemplate(w, r, "register", &commons.Page{
 				Title: "Register",
-				CSS:   []string{"sign-in-up"},
 			})
 			return
 		}

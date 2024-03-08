@@ -16,14 +16,30 @@
 	<header>
 		<div class="header__title">
 			<div class="header__logo">
-				<img src="/static/icons/infinity.png" alt="">
+				<a href="/">
+					<img src="/static/icons/infiniti.png" alt="">
+				</a>
 			</div>
+			{{ if .IsLoggedIn }}
+			<hr>
+			<div class="header__nav">
+				<nav>
+					<ul>
+						<li><a href="/apps"><img src="/static/icons/app.png" alt="app"></a></li>
+					</ul>
+				</nav>
+			</div>
+			{{ end }}
 		</div>
 		{{ if .IsLoggedIn }}
 		<div class="header__main">
 		</div>
 		<div class="header__footer">
-<!--			<p id="cookie-username" hx-get="/get-cookies/username" hx-swap="innerHTML" hx-trigger="revealed"></p>-->
+			<div class="header__footer__nav">
+				<ul>
+					<li><a href="/settings"><img src="/static/icons/settings.png" alt="settings"></a></li>
+				</ul>
+			</div>
 			<div class="header__footer__logout" hx-get="/logout" hx-confirm="Are you sure you wish to delete your account?">
 				S
 			</div>
@@ -32,7 +48,7 @@
 	</header>
 
 	<main>
-		<div id="errors" remove-content="10s"></div>
+		<div id="errors"></div>
 		{{ template "content" . }}
 	</main>
 </div>

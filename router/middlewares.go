@@ -2,10 +2,10 @@ package router
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/database"
+	"github.com/Olprog59/infimetrics/models"
 	"net/http"
 	"strings"
 	"time"
@@ -40,11 +40,15 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func DbAndRedisMiddleware(db *sql.DB, redis *database.RedisDB) func(http.Handler) http.Handler {
+func DbAndRedisMiddleware(db *database.Db, redis *database.RedisDB, mongo *database.Mongo) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			ctx := context.WithValue(r.Context(), database.DbKey, db)
-			ctx = context.WithValue(ctx, database.RedisKey, redis)
+			store := &models.Store{
+				Db:      db,
+				RedisDB: redis,
+				Mongo:   mongo,
+			}
+			ctx := context.WithValue(r.Context(), models.StoreKey, store)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -103,19 +107,19 @@ func isAuthenticated(r *http.Request) (context.Context, string, bool) {
 		return newCtx, "", false
 	}
 
-	redis, ok := database.FromContextRedis(r)
+	store, ok := models.FromContextStore(r)
 	if !ok {
-		golog.Warn("Could not get Redis connection from context")
+		golog.Warn("Could not get Store connection from context")
 		return newCtx, "", false
 	}
 
-	_, err = redis.HGet(sessionToken.Value, "userID")
+	_, err = store.RedisDB.HGet(sessionToken.Value, "userID")
 	if err != nil {
 		golog.Warn("Error getting value from Redis")
 		return newCtx, "", false
 	}
 
-	username, err := redis.HGet(sessionToken.Value, "username")
+	username, err := store.RedisDB.HGet(sessionToken.Value, "username")
 	if err != nil {
 		golog.Warn("Error getting value from Redis")
 		return newCtx, "", false

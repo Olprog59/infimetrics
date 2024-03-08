@@ -28,6 +28,19 @@
   padding: 0
   box-sizing: border-box
 
+
+@mixin button($bg: $color-white, $color: $color-primary, $radius: 5px)
+  border: none
+  outline: none
+  padding: 8px 13px
+  border-radius: 5px
+  background-color: $bg
+  color: $color
+  transition: background-color 300ms ease-in-out, color 300ms ease-in-out
+  cursor: pointer
+  &:hover
+    background-color: darken($bg, 10%)
+
 \:root
 
   --width-header: 60px
@@ -49,13 +62,19 @@ $color-white: #ffffff // White
 $color-secondary: $color-white
 
 // Supporting Colors
-$color-green: #9BBEA9 // Grayed Jade
+$color-green: #33c56b
+$color-green-30: rgba(51, 197, 107, 0.3)
+// Grayed Jade
 $color-orange: #F5786B // Persimmon
 $color-orange-light: #FFAD4F // Iced Mango
+$color-orange-light-30: rgba(255, 173, 79, 0.3)
+// Iced Mango
 $color-red: #E4572E // Cherry Tomato
 
 $color-pink: #E0218A // Barbiecore
 $color-pink-pastel: #F07BA5 // Pink Cosmos
+$color-pink-pastel-30: rgba(240, 123, 165, 0.3)
+// Pink Cosmos
 
 // Neutral Colors
 $color-light-gray: #C4C6C8 // Light Gray

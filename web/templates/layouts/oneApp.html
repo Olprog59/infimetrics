@@ -1,0 +1,34 @@
+{{ define "content" }}
+<div id="apps">
+	{{ $token := .AppToken }}
+	<div id="apps__header">
+		<h1>
+			App Name
+		</h1>
+		<div id="apps__header__actions" hx-delete="/api/v1/app/{{$token}}">Delete</div>
+		<div id="test" hx-get="/api/v1/logs/{{.AppToken}}">test ajout</div>
+	</div>
+
+	<div id="apps__logs">
+		{{ with .Data }}
+			{{ range . }}
+			<div id="apps__log">
+				<div id="apps__app__created">{{ .Timestamp }}</div>
+				<div id="apps__app__level">{{ .Level }}</div>
+				<div id="apps__app__message">{{ .Message }}</div>
+				<div id="apps__app__metadata">{{ .Metadata }}</div>
+				<!--				<div id="apps__app__actions">-->
+				<!--					<button hx-get="/api/v1/app/{{ $token }}" hx-target="#apps__app__edit" hx-swap="innerHTML swap:300ms">Edit</button>-->
+				<!--				</div>-->
+				<!--				<div id="apps__app__edit"></div>-->
+			</div>
+			{{ end }}
+		{{ else }}
+		<div id="apps__log">
+			<div id="apps__app__name">No Apps Found</div>
+		</div>
+		{{ end }}
+	</div>
+</div>
+{{ end }}
+

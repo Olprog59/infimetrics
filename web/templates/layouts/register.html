@@ -19,7 +19,7 @@
 		<div class="form-group">
 			<label class="form-label" for="username">Name*:</label>
 			<input class="form-input" type="text" id="username" name="username" required
-			       pattern="^[a-zA-Z][a-zA-Z0-9_\-]{2,14}[a-zA-Z]$"
+			       pattern="^\p{L}[\p{L}_\-]{1,13}\p{L}$"
 			       minlength="3"
 			       maxlength="15"
 			       hx-post="/sign-up/username"
@@ -70,7 +70,6 @@
 			<div id="error-same-password"></div>
 		</div>
 		<button class="form-submit" id="form-submit" type="submit" disabled>Sign Up</button>
-		<div id="errors" remove-content="10s"></div>
 	</form>
 	<p class="signin-link">Or <a href="/sign-in">Sign In</a></p>
 

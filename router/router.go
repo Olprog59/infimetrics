@@ -1,10 +1,10 @@
 package router
 
 import (
-	"database/sql"
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/database"
 	"github.com/Olprog59/infimetrics/handlers"
+	"github.com/Olprog59/infimetrics/handlers/api"
 	"net/http"
 )
 
@@ -16,8 +16,9 @@ type Router interface {
 
 // httpRouter implémente l'interface Router.
 type httpRouter struct {
-	DB          *sql.DB
+	DB          *database.Db
 	Redis       *database.RedisDB
+	Mongo       *database.Mongo
 	middlewares []func(http.Handler) http.Handler
 }
 
@@ -27,10 +28,11 @@ func (r *httpRouter) Use(middleware func(http.Handler) http.Handler) {
 }
 
 // NewRouter crée une nouvelle instance de Router.
-func NewRouter(db *sql.DB, redis *database.RedisDB) Router {
+func NewRouter(db *database.Db, redis *database.RedisDB, mongo *database.Mongo) Router {
 	return &httpRouter{
 		DB:    db,
 		Redis: redis,
+		Mongo: mongo,
 	}
 }
 
@@ -59,10 +61,21 @@ func (r *httpRouter) RegisterRoutes() {
 	mux.HandleFunc("POST /sign-up/password", handlers.SignUpPassword())
 	mux.HandleFunc("POST /sign-up/same-password", handlers.SignUpPasswordSame())
 
-	// Get Cookies
-	mux.HandleFunc("GET /get-cookies/username", handlers.GetCookiesUsernameHandler())
+	mux.HandleFunc("GET /apps", handlers.AppsHandler())
 
-	mux.HandleFunc("/dashboard", handlers.DashboardHandler())
+	// Routes pour les applications
+	mux.HandleFunc("GET /api/v1/apps", api.ApiAppsHandler())
+	mux.HandleFunc("GET /api/v1/app", api.ApiNewAppsHandler())
+	mux.HandleFunc("POST /api/v1/app", api.ApiNewAppsPostHandler())
+	mux.HandleFunc("DELETE /api/v1/app/{token}", api.ApiDeleteAppsPostHandler())
+	mux.HandleFunc("DELETE /api/v1/app/modal", api.ApiNewAppsDeleteHandler())
+
+	// Routes pour les logs
+	mux.HandleFunc("GET /api/v1/apps/{token}", api.ApiOneAppHandler())
+	mux.HandleFunc("GET /api/v1/logs/{token}", api.ApiLogsHandler())
+	//mux.HandleFunc("GET /api/v1/logs/{token}/refresh", api.ApiLogsWatchHandler())
+
+	mux.HandleFunc("/settings", handlers.SettingsHandler())
 
 	handler := http.Handler(mux)
 	for i := len(r.middlewares) - 1; i >= 0; i-- {

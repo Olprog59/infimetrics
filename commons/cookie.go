@@ -1,7 +1,6 @@
-package handlers
+package commons
 
 import (
-	"github.com/Olprog59/infimetrics/commons"
 	"net/http"
 	"time"
 )
@@ -13,17 +12,15 @@ const (
 	Username     CookieName = "username"
 )
 
-func ListCookieNames() []CookieName {
-	return []CookieName{SessionToken, Username}
-}
+var Cookies []CookieName = []CookieName{SessionToken, Username}
 
-func setCookieHandler(w http.ResponseWriter, r *http.Request, key CookieName, value string) {
+func SetCookie(w http.ResponseWriter, r *http.Request, key CookieName, value string) {
 	cookie := http.Cookie{
 		Name:     string(key),
 		Value:    value,
 		Path:     "/",
-		Expires:  time.Now().Add(commons.TimeoutCookie),
-		MaxAge:   int(commons.TimeoutCookie.Seconds()),
+		Expires:  time.Now().Add(TimeoutCookie),
+		MaxAge:   int(TimeoutCookie.Seconds()),
 		Secure:   true,
 		HttpOnly: true,
 	}
@@ -31,12 +28,12 @@ func setCookieHandler(w http.ResponseWriter, r *http.Request, key CookieName, va
 	http.SetCookie(w, &cookie)
 }
 
-func clearCookieHandler(w http.ResponseWriter, name CookieName) {
+func ClearCookie(w http.ResponseWriter, name CookieName) {
 	cookie := http.Cookie{
 		Name:     string(name),
 		Value:    "",
 		Path:     "/",
-		Expires:  time.Now().Add(-commons.TimeoutCookie),
+		Expires:  time.Now().Add(-TimeoutCookie),
 		MaxAge:   -1,
 		Secure:   true,
 		HttpOnly: true,
@@ -45,7 +42,7 @@ func clearCookieHandler(w http.ResponseWriter, name CookieName) {
 	http.SetCookie(w, &cookie)
 }
 
-func getCookie(r *http.Request, name string) (string, error) {
+func GetCookie(r *http.Request, name string) (string, error) {
 	cookie, err := r.Cookie(name)
 	if err != nil {
 		return "", err

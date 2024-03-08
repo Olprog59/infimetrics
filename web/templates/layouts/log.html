@@ -1,0 +1,8 @@
+{{ define "content" }}
+<div id="apps__log">
+	<div id="apps__app__created">{{ .Timestamp }}</div>
+	<div id="apps__app__level">{{ .Level }}</div>
+	<div id="apps__app__message">{{ .Message }}</div>
+	<div id="apps__app__metadata">{{ .Metadata }}</div>
+</div>
+{{ end }}

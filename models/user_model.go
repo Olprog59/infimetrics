@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/commons"
-	"github.com/Olprog59/infimetrics/database"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"time"
@@ -22,8 +21,7 @@ const (
 )
 
 type UserModel struct {
-	DB           *database.Db       `json:"-"`
-	Redis        *database.RedisDB  `json:"-"`
+	Store        *Store             `json:"-"`
 	UserId       uint               `json:"user_id"`
 	Username     string             `json:"username"`
 	Email        string             `json:"email"`
@@ -34,14 +32,11 @@ type UserModel struct {
 }
 
 type LoginModel struct {
-	DB           *database.Db      `json:"-"`
-	Redis        *database.RedisDB `json:"-"`
-	Email        string            `json:"email"`
-	Password     string            `json:"passwordHash"`
-	SessionToken string            `json:"-"`
+	Store        *Store `json:"-"`
+	Email        string `json:"email"`
+	Password     string `json:"passwordHash"`
+	SessionToken string `json:"-"`
 }
-
-// ... (rest of the code remains the same)
 
 func (u *UserModel) Register() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
@@ -49,7 +44,7 @@ func (u *UserModel) Register() error {
 		return err
 	}
 
-	stmt, err := u.DB.DB.Prepare(insertUserQuery)
+	stmt, err := u.Store.DB.Prepare(insertUserQuery)
 	if err != nil {
 		return err
 	}
@@ -73,7 +68,7 @@ func (l *LoginModel) Login() bool {
 	var userId uint
 	var username string
 
-	stmt, err := l.DB.DB.Prepare(selectUserQuery)
+	stmt, err := l.Store.DB.Prepare(selectUserQuery)
 	if err != nil {
 		log.Println("Erreur lors de la préparation de la requête :", err)
 		return false
@@ -99,7 +94,7 @@ func (l *LoginModel) Login() bool {
 
 	sessionToken := generateSessionToken()
 	l.SessionToken = sessionToken
-	err = l.Redis.HSetWithTimeout(sessionToken, map[string]any{"userID": userId, "username": username}, commons.TimeoutCookie)
+	err = l.Store.HSetWithTimeout(sessionToken, map[string]any{"userID": userId, "username": username}, commons.TimeoutCookie)
 	//err = l.Redis.SetWithTimeout(sessionToken, userId, commons.TimeoutCookie)
 	if err != nil {
 		log.Println("Erreur lors de la sauvegarde du token de session :", err)
@@ -109,7 +104,7 @@ func (l *LoginModel) Login() bool {
 }
 
 func (u *UserModel) UpdateLastLogin() error {
-	stmt, err := u.DB.DB.Prepare(updateUserQuery)
+	stmt, err := u.Store.DB.Prepare(updateUserQuery)
 	if err != nil {
 		log.Println("Erreur lors de la préparation de la requête :", err)
 		return err
@@ -129,13 +124,12 @@ func (u *UserModel) UpdateLastLogin() error {
 }
 
 func (u *UserModel) ConvertLoginToUserModel(l *LoginModel) error {
-	u.DB = l.DB
-	u.Redis = l.Redis
-	userId, err := u.Redis.HGet(l.SessionToken, "userID")
+	u.Store = l.Store
+	userId, err := u.Store.HGet(l.SessionToken, "userID")
 	if err != nil {
 		return err
 	}
-	stmt, err := u.DB.DB.Prepare(selectUserByIdQuery)
+	stmt, err := u.Store.DB.Prepare(selectUserByIdQuery)
 	if err != nil {
 		log.Println("Erreur lors de la préparation de la requête :", err)
 		return err

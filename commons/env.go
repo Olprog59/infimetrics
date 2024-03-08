@@ -20,6 +20,16 @@ var (
 	REDIS_HOST     = GetEnv("REDIS_HOST", "localhost")
 	REDIS_PORT     = GetEnv("REDIS_PORT", "6379")
 	REDIS_PASSWORD = GetEnv("REDIS_PASSWORD", "password")
+
+	MONGO_HOST     = GetEnv("MONGO_HOST", "localhost")
+	MONGO_PORT     = GetEnv("MONGO_PORT", "27017")
+	MONGO_USER     = GetEnv("MONGO_USER", "user")
+	MONGO_PASSWORD = GetEnv("MONGO_PASSWORD", "password")
+
+	SURREALDB_USER     = GetEnv("SURREALDB_USER", "root")
+	SURREALDB_PASSWORD = GetEnv("SURREALDB_PASSWORD", "root")
+	SURREALDB_HOST     = GetEnv("SURREALDB_HOST", "localhost")
+	SURREALDB_PORT     = GetEnv("SURREALDB_PORT", "8000")
 )
 
 // GetEnv is a function to get environment variable

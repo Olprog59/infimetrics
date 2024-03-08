@@ -1,3 +1,4 @@
+$icons-width: 38px
 .container > header
 	position: fixed
 	left: 0
@@ -8,6 +9,8 @@
 	background-color: $color-primary
 	overflow: hidden
 
+	color: $color-secondary
+
 	display: flex
 	flex-direction: column
 	justify-content: space-between
@@ -15,26 +18,27 @@
 
 	padding: 1rem 0
 
-	div.header__title
-		div.header__logo
-			img
-				filter: invert(1)
+	& img
+		width: $icons-width
 
+	& .header__nav
+		padding-top: 30px
 
 	div.header__footer
+		.header__footer__nav
+			padding: 20px 0
 		.header__footer__logout
 			background-color: $color-secondary
+			color: $color-primary
 			padding: 0.2rem
 			text-align: center
-			line-height: calc(var(--width-header) * 0.7)
+			line-height: $icons-width
 
 			transition: background-color 200ms ease-in-out, font-size 200ms ease-in-out
-			width: calc(var(--width-header) * 0.7)
-			height: calc(var(--width-header) * 0.7)
+			width: $icons-width
+			height: $icons-width
 			border-radius: 50%
-			//display: flex
-			//justify-content: center
-			//align-items: center
+
 			&:hover
 				cursor: pointer
 				font-size: 1.2rem

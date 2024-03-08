@@ -15,11 +15,11 @@ type Db struct {
 	DB *sql.DB
 }
 
-func NewDB() IDB {
+func NewDB() *Db {
 	return &Db{}
 }
 
-func (d *Db) Connect() (*sql.DB, error) {
+func (d *Db) Connect() (*Db, error) {
 	dbConnStr := "postgresql://" + commons.DB_USER + ":" + commons.DB_PASSWORD + "@" + commons.DB_HOST + "/" + commons.DB_NAME + "?sslmode=" + commons.SSL_MODE
 	// Connect to database
 	db, err := sql.Open(commons.DB_DRIVER, dbConnStr)
@@ -41,7 +41,9 @@ func (d *Db) Connect() (*sql.DB, error) {
 		return nil, err
 	}
 	golog.Success("Successfully created table!")
-	return db, nil
+	var dbInstance = new(Db)
+	dbInstance.DB = db
+	return dbInstance, nil
 }
 
 func (d *Db) Close() error {
@@ -54,7 +56,7 @@ func (d *Db) Close() error {
 }
 
 const sqlInitStr = `
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -63,27 +65,16 @@ CREATE TABLE IF NOT EXISTS Users (
     last_login TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TABLE IF NOT EXISTS Applications (
+CREATE TABLE IF NOT EXISTS application (
     app_id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     app_name VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    token VARCHAR(64) NOT NULL,
     description TEXT,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Logs (
-    log_id SERIAL PRIMARY KEY,
-    app_id INTEGER NOT NULL,
-    level VARCHAR(50),
-    message TEXT NOT NULL,
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    metadata JSONB,
-    FOREIGN KEY (app_id) REFERENCES Applications(app_id) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_users_username ON Users(username);
-CREATE INDEX IF NOT EXISTS idx_applications_user_id ON Applications(user_id);
-CREATE INDEX IF NOT EXISTS idx_logs_app_id ON Logs(app_id);
-CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON Logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_applications_user_id ON application(user_id);
 `

@@ -1,0 +1,23 @@
+{{ define "content" }}
+<div id="apps">
+	<div id="apps__header">
+		<h1>
+			Apps
+			<button hx-get="/api/v1/app" hx-target="#apps__new" hx-swap="innerHTML swap:300ms">New App</button>
+		</h1>
+		<div id="apps__new"></div>
+	</div>
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Created</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody id="apps__all" hx-get="/api/v1/apps" hx-trigger="load" hx-swap="innerHTML transition:true"></tbody>
+	</table>
+</div>
+{{ end }}
+

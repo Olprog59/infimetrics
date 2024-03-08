@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/Olprog59/golog"
 	"github.com/Olprog59/infimetrics/commons"
@@ -22,8 +21,9 @@ func main() {
 
 	golog.Success("I'm running on host %s", commons.HOST)
 
-	db, dbConnect := loadDatabase()
+	db := loadDatabase()
 	redis := loadRedis()
+	mongo := loadMongo()
 
 	defer func() {
 		if err := db.Close(); err != nil {
@@ -31,8 +31,8 @@ func main() {
 		}
 	}()
 
-	r := router.NewRouter(dbConnect, redis)
-	r.Use(router.DbAndRedisMiddleware(dbConnect, redis))
+	r := router.NewRouter(db, redis, mongo)
+	r.Use(router.DbAndRedisMiddleware(db, redis, mongo))
 	r.Use(router.AuthMiddleware)    // Ajoute le middleware d'authentification
 	r.Use(router.LoggingMiddleware) // Ajoute le middleware de journalisation
 	r.RegisterRoutes()
@@ -44,13 +44,13 @@ func main() {
 	}
 }
 
-func loadDatabase() (database.IDB, *sql.DB) {
+func loadDatabase() *database.Db {
 	db := database.NewDB()
 	dbConnect, err := db.Connect()
 	if err != nil {
 		golog.Debug(err.Error())
 	}
-	return db, dbConnect
+	return dbConnect
 }
 
 func loadRedis() *database.RedisDB {
@@ -60,4 +60,13 @@ func loadRedis() *database.RedisDB {
 		golog.Debug(err.Error())
 	}
 	return redis
+}
+
+func loadMongo() *database.Mongo {
+	mongo := database.NewMongo()
+	_, err := mongo.Connect()
+	if err != nil {
+		golog.Debug(err.Error())
+	}
+	return mongo
 }
